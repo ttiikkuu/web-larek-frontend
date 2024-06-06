@@ -19,5 +19,7 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/no-inferrable-types": "off"
     }
 }
