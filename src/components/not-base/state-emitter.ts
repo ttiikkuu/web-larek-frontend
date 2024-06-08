@@ -85,8 +85,6 @@ export class StateEmitter<T extends object> {
 	}
 
 	public unsubscribe(eventName: EventName, listener: (state: T) => void, isFullDelete: boolean = false): void {
-		// console.log(this._eventStateMap.get(eventName), eventName);
-
 		const eventInfo = this._eventStateMap.get(eventName);
 
 		if (eventInfo) {

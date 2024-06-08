@@ -12,12 +12,12 @@
 
 .icon:before{
 	display: inline-block;
-   font-family: 'Glyphter';
-   font-style: normal;
-   font-weight: normal;
-   line-height: 1;
-   -webkit-font-smoothing: antialiased;
-   -moz-osx-font-smoothing: grayscale
+	font-family: 'Glyphter';
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .icon-back:before{content:'\0041';}

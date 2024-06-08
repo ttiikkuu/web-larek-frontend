@@ -27,13 +27,13 @@ export class Modal {
 		this._removeEventListeners();
 	}
 
-	private _addEventListeners() {
+	private _addEventListeners(): void {
 		window.addEventListener('keydown', this._closeEscListener);
 		this._modalCloseNode.addEventListener('click', this._closeBtnClickListener);
 		this._modalContainerNode.addEventListener('click', this._closeOverlayClickListener);
 	}
 
-	private _removeEventListeners() {
+	private _removeEventListeners(): void {
 		window.removeEventListener('keydown', this._closeEscListener);
 		this._modalCloseNode.removeEventListener('click', this._closeBtnClickListener);
 		this._modalContainerNode.removeEventListener('click', this._closeOverlayClickListener);
@@ -50,9 +50,10 @@ export class Modal {
 	}
 
 	private _closeOverlayClickListener = (event: PointerEvent): void => {
+		event.stopPropagation();
 		const targetNode = event.target as HTMLElement;
 		const closestModalContainerNode = targetNode.closest('.modal__container'); // Если в родителях есть 
-
+		
 		if (closestModalContainerNode === null) this.close();
 	}
 }

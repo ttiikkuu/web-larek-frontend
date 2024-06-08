@@ -11,16 +11,12 @@ export class ProductFullCard {
 	private _product: Product;
 	private _existInBacket = false;
 	private _fullCardBtnNode: HTMLButtonElement;
-	private _node: null | HTMLElement = null;
-	private _nodes = {
-		
-	};
 
 	constructor(stateEmitter: StateEmitter<object>) {
 		this._stateEmitter = stateEmitter;
 	}
 
-	public createNode(product: Product): HTMLElement {		
+	public createNode(product: Product): HTMLElement {
 		this._product = product;
 
 		const fullCardTemplate = document.querySelector<HTMLTemplateElement>('#card-preview').content;
@@ -32,27 +28,21 @@ export class ProductFullCard {
 		const fullCardPriceNode = fullCardNode.querySelector('.card__price');
 		const fullCardBtnNode = fullCardNode.querySelector<HTMLButtonElement>('.card__button');
 		const priceText = product.price === null ? 'Бесценно' : `${product.price} синапсов`;
-
+		
 		this._fullCardBtnNode = fullCardBtnNode;
+
 		fullCardBtnNode.textContent = 'Добавить в корзину';
 		fullCardCategoryNode.textContent = product.category;
 		fullCardTitleNode.textContent = product.title;
 		fullCardTextNode.textContent = product.description;
 		fullCardImageNode.src = `${CDN_URL}${product.image}`;
 		fullCardPriceNode.textContent = priceText;
-		
+
 
 		this._stateEmitter.subscribe(`changeCart id: ${product.id}`, this._listenerChangeCart);
-		// this._stateEmitter.subscribe(`removeFromCart id: ${this._product.id}`, this._listenerRemoveFromCart);
-		// this._stateEmitter.subscribe(`openFullCard by id: ${this.product.id}`, this._openFullCardByCallback);
 		this._stateEmitter.subscribeNewEvents(`closeFullCard by id: ${product.id}`, this._closeCallbackFullCard);
 
 		fullCardBtnNode.addEventListener('click', () => {
-			
-			console.log('Клик по кнопке');
-
-			console.log(this._existInBacket, 'this._existInBacket');
-
 
 			if (this._existInBacket === false) { // Если нет в корзине, то добавить в корзину, иначе удалить
 				this._existInBacket = true;
@@ -75,24 +65,21 @@ export class ProductFullCard {
 		return fullCardNode;
 	}
 
-	public destroyNode() {}
+	public destroyNode() { }
 
-	private _listenerChangeCart = ({ existInBacket }: { existInBacket: boolean }) => {
+	private _listenerChangeCart = ({ existInBacket }: { existInBacket: boolean }) => {		
+		this._existInBacket = existInBacket;
+
 		if (existInBacket === true) {
-			console.log(this._product.id, 'Находится в корзине');
 			this._fullCardBtnNode.textContent = 'Удалить из корзины';
 		} else {
-			console.log(this._product.id, 'Не находится в корзине');
 			this._fullCardBtnNode.textContent = 'Добавить в корзину';
 		}
 	}
 
-	private _closeCallbackFullCard = () => {
-		console.log('Модалка закрылась');
-
-		this._stateEmitter.unsubscribeAll(`changeCart id: ${this._product.id}`);
-		this._stateEmitter.unsubscribeAll(`closeFullCard by id: ${this._product.id}`);
-		this._stateEmitter.unsubscribeAll(`openFullCard by id: ${this.product.id}`);
+	private _closeCallbackFullCard = () => {		
+		this._stateEmitter.unsubscribe(`changeCart id: ${this._product.id}`, this._listenerChangeCart);
+		this._stateEmitter.unsubscribe(`closeFullCard by id: ${this._product.id}`, this._closeCallbackFullCard);
 	}
 
 

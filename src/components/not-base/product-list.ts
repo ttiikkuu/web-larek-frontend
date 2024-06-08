@@ -4,19 +4,19 @@ import { ProductComponent } from "./product.component";
 import { StateEmitter } from "./state-emitter";
 
 export class ProductList {
-    private galleryNode = document.querySelector('.gallery');
-    private stateEmitter: StateEmitter<object>;
+	private galleryNode = document.querySelector('.gallery');
+	private stateEmitter: StateEmitter<object>;
 
-    constructor(stateEmitter: StateEmitter<object>) {
-        this.stateEmitter = stateEmitter;
-    }
+	constructor(stateEmitter: StateEmitter<object>) {
+		this.stateEmitter = stateEmitter;
+	}
 
-    public render(products: Product[]): void {
-        for (const product of products) {
-            const productComponent = new ProductComponent(product, this.stateEmitter);
-            const productComponentNode = productComponent.createNode();
+	public render(products: Product[]): void {
+		for (const product of products) {
+			const productComponent = new ProductComponent(product, this.stateEmitter);
+			const productComponentNode = productComponent.createNode();
 
-            this.galleryNode.append(productComponentNode);
-        }
-    }
+			this.galleryNode.append(productComponentNode);
+		}
+	}
 }

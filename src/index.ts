@@ -13,13 +13,12 @@ const apiProductsService = new ApiProductsService();
 const productList = new ProductList(stateEmitter);
 const shoppingCart = new ShoppingCart(stateEmitter);
 
+stateEmitter.updateState('cart', {});
 apiProductsService.getAll().then(products => {
 	productList.render(products);
 });
 
 stateEmitter.subscribe<Product>('openFullCard', product => {
-	// console.log(product, 'product openFullCard');
-
 	const productFullCard = new ProductFullCard(stateEmitter);
 	const productFullCardNode = productFullCard.createNode(product);
 
