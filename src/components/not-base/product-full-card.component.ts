@@ -8,13 +8,13 @@ export class ProductFullCard {
 	public get product() {
 		return this._product;
 	}
-	private _stateEmitter: StateEmitter<object>;
+	private _stateEmitter: StateEmitter;
 	private _product: Product;
 	private _existInBacket = false;
 	private _fullCardBtnNode: HTMLButtonElement;
-	private _cart: Cart<object>;
+	private _cart: Cart;
 
-	constructor(stateEmitter: StateEmitter<object>, cart: Cart<object>) {
+	constructor(stateEmitter: StateEmitter, cart: Cart) {
 		this._stateEmitter = stateEmitter;
 		this._cart = cart;
 	}

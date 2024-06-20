@@ -1,14 +1,13 @@
 import { Product } from "../../types";
 import { StateEmitter } from "./state-emitter";
 
-export class Cart<T extends object> {
-	private _stateEmitter: StateEmitter<object>
+export class Cart<T extends object = object> {
+	private _stateEmitter: StateEmitter
 
 	constructor(
-		stateEmitter: StateEmitter<object>
+		stateEmitter: StateEmitter
 	) {
 		this._stateEmitter = stateEmitter;
-		
 	}
 
 	public addToCart(product: Product): void {
@@ -40,7 +39,7 @@ export class Cart<T extends object> {
 		this._stateEmitter.setState('cart', cartState);
 	}
 
-	public getCart(): Product[] {
+	public getProducts(): Product[] {
 		return this._getArrCart();
 	}
 

@@ -1,4 +1,5 @@
 import { FirstStepOrderData, Product } from "../../types";
+import { Cart } from "./cart";
 import { CartStep2 } from "./cart-step-2";
 import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
@@ -18,7 +19,7 @@ interface CartStep1Nodes {
 }
 
 export class CartStep1 {
-	private _stateEmitter: StateEmitter<object>;
+	private _stateEmitter: StateEmitter;
 	private _nodes: CartStep1Nodes = {
 		orderFormNode: null,
 		orderCardButtonNode: null,
@@ -27,7 +28,7 @@ export class CartStep1 {
 		orderNextBtnNode: null,
 		orderFormErrorsNode: null
 	};
-	private _cart: Product[] = [];
+	private _cart: Cart;
 	private _formState: CartStep1FormState = {
 		paymentMethod: null,
 		address: null,
@@ -37,7 +38,7 @@ export class CartStep1 {
 		return (this._formState.address !== null && this._formState.address !== '' && this._formState.paymentMethod !== null);
 	}
 
-	constructor(stateEmitter: StateEmitter<object>, cart: Product[]) {
+	constructor(stateEmitter: StateEmitter, cart: Cart) {
 		this._stateEmitter = stateEmitter;
 		this._cart = cart;
 	}
@@ -85,20 +86,12 @@ export class CartStep1 {
 
 		this._nodes.orderNextBtnNode.disabled = !this._validForm;
 		this._renderFormErrors();
-
-		console.log(this._formState);
-		console.log(this._validForm, 'this._validForm');
 	}
 
 	private _inputAddressListener = (): void => {
-		// console.log(event);
 		this._formState.address = this._nodes.orderInputAddressNode.value;
 		this._nodes.orderNextBtnNode.disabled = !this._validForm;
 		this._renderFormErrors();
-
-		console.log(this._formState);
-		console.log(this._validForm, 'this._validForm');
-		
 	}
 
 	private _clickNextBtnListener = (event: PointerEvent): void => {
@@ -122,11 +115,11 @@ export class CartStep1 {
 		const firstStepOrderData: FirstStepOrderData = {
 			paymentMethod: this._formState.paymentMethod,
 			address: this._formState.address,
-			cart: this._cart
+			products: this._cart.getProducts()
 		};
-		const cartStep2 = new CartStep2(this._stateEmitter, firstStepOrderData);
+		const cartStep2 = new CartStep2(this._stateEmitter, this._cart, firstStepOrderData);
 		const cartStep2Node = cartStep2.createModalContentNode();
-		const modal = new Modal(cartStep2Node);
+		const modal = new Modal(cartStep2Node, this._stateEmitter);
 
 		modal.open();
 	}

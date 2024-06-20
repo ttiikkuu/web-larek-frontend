@@ -11,7 +11,7 @@ type EventInfo<T> = {
 	subscribers: Set<Subscriber<T>>;
 }
 
-export class StateEmitter<T extends object> {
+export class StateEmitter<T extends object = object> {
 	private _eventStateMap: Map<EventName, EventInfo<T>>;
 
 	constructor() {

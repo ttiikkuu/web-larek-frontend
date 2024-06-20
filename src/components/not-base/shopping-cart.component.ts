@@ -5,7 +5,7 @@ import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
 
 export class ShoppingCart {
-	private _stateEmitter: StateEmitter<object>;
+	private _stateEmitter: StateEmitter;
 	private _nodes = {
 		headerBasketCounterNode: document.querySelector('.header__basket-counter'),
 		headerBasketNode: document.querySelector('.header__basket'),
@@ -13,16 +13,16 @@ export class ShoppingCart {
 		cartPriceNode: null as any,
 		cartListNode: null as any
 	};
-	private _cart: Cart<object>
+	private _cart: Cart;
 	private _modalCart: Modal | null = null;
 
-	constructor(stateEmitter: StateEmitter<object>, cart: Cart<object>) {
+	constructor(stateEmitter: StateEmitter, cart: Cart) {
 		this._stateEmitter = stateEmitter;
 		this._cart = cart;
 		this._initEventListeners();
 	}
 
-	private _createCartModalContentNode(cart: Product[]): HTMLElement {
+	private _createCartModalContentNode(): HTMLElement {
 		const cartTemplate = document.querySelector<HTMLTemplateElement>('#basket').content;
 		const cartNode = cartTemplate.querySelector('.basket').cloneNode(true) as HTMLElement;
 		const cartListNode = cartNode.querySelector('.basket__list');
@@ -30,7 +30,7 @@ export class ShoppingCart {
 		const cartPriceNode = cartNode.querySelector('.basket__price');
 
 		cartPlaceOrderBtnNode.addEventListener('click', () => {
-			setTimeout(() => this._clickCheckoutCartListener(cart), 0);
+			setTimeout(() => this._clickCheckoutCartListener(this._cart), 0);
 		});
 
 		// this._nodes.cartNode = cartNode;
@@ -38,10 +38,10 @@ export class ShoppingCart {
 		this._nodes.cartPriceNode = cartPriceNode;
 		this._nodes.cartListNode = cartListNode;
 
-		cartPlaceOrderBtnNode.disabled = this._cart.getCart().length === 0;
+		cartPlaceOrderBtnNode.disabled = this._cart.getProducts().length === 0;
 		this._nodes.cartPlaceOrderBtnNode = cartPlaceOrderBtnNode;
 
-		const cartModalContentItemNodes = cart.map((product, index) => this._createCartModalContentItemNode(product, index + 1));
+		const cartModalContentItemNodes = this._cart.getProducts().map((product, index) => this._createCartModalContentItemNode(product, index + 1));
 
 		cartListNode.textContent = '';
 		cartListNode.append(...cartModalContentItemNodes);
@@ -82,8 +82,8 @@ export class ShoppingCart {
 	}
 
 	private _clickHeaderBasketListener = (): void => {
-		const cartModalContentNode = this._createCartModalContentNode(this._cart.getCart());
-		const modal = new Modal(cartModalContentNode);
+		const cartModalContentNode = this._createCartModalContentNode();
+		const modal = new Modal(cartModalContentNode, this._stateEmitter);
 		
 		this._modalCart = modal;
 		modal.open();
@@ -95,22 +95,22 @@ export class ShoppingCart {
 		this._cart.deleteFromCart(product);
 	}
 
-	private _clickCheckoutCartListener = (cart: Product[]): void => {
+	private _clickCheckoutCartListener = (cart: Cart): void => {
 		const cartStep1 = new CartStep1(this._stateEmitter, cart);
 		const cartStep1Node = cartStep1.createModalContentNode();
-		const modal = new Modal(cartStep1Node);
+		const modal = new Modal(cartStep1Node, this._stateEmitter);
 
 		modal.open();
 	}
 
 	private _renderCartInfo(): void {
-		this._nodes.headerBasketCounterNode.textContent = String(this._cart.getCart().length);
+		this._nodes.headerBasketCounterNode.textContent = String(this._cart.getProducts().length);
 
 		if (this._nodes.cartPriceNode === null) return;
 		this._nodes.cartPriceNode.textContent = `${this._cart.calcSumCart()} синапсов`;
 
 		if (this._nodes.cartListNode === null) return;
-		const cartModalContentItemNodes = this._cart.getCart().map((product, index) => this._createCartModalContentItemNode(product, index + 1));
+		const cartModalContentItemNodes = this._cart.getProducts().map((product, index) => this._createCartModalContentItemNode(product, index + 1));
 
 		this._nodes.cartListNode.textContent = '';
 		this._nodes.cartListNode.append(...cartModalContentItemNodes);

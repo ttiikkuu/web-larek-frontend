@@ -5,9 +5,9 @@ import { StateEmitter } from "./state-emitter";
 
 export class ProductList {
 	private galleryNode = document.querySelector('.gallery');
-	private stateEmitter: StateEmitter<object>;
+	private stateEmitter: StateEmitter;
 
-	constructor(stateEmitter: StateEmitter<object>) {
+	constructor(stateEmitter: StateEmitter) {
 		this.stateEmitter = stateEmitter;
 	}
 

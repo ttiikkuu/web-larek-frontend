@@ -2,6 +2,7 @@ import { FirstStepOrderData, SecondStepOrderData, Product } from "../../types";
 import { StateEmitter } from "./state-emitter";
 import { Modal } from "./modal.component";
 import { CartStepFinal } from "./cart-step-final";
+import { Cart } from "./cart";
 
 interface CartStep2FormState {
 	email: string | null;
@@ -17,8 +18,8 @@ interface CartStep2Nodes {
 }
 
 export class CartStep2 {
-	private _stateEmitter: StateEmitter<object>;
-	private _cart: Product[] = [];
+	private _stateEmitter: StateEmitter;
+	private _cart: Cart;
 	private _paymentMethod: 'cash'	| 'card';
 	private _address: string;
 
@@ -39,7 +40,7 @@ export class CartStep2 {
 		return (this._formState.email !== null && this._formState.email !== '' && this._formState.phone !== null && this._formState.phone !== '');
 	}
 
-	constructor(stateEmitter: StateEmitter<object>, { address, paymentMethod, cart }: FirstStepOrderData) {
+	constructor(stateEmitter: StateEmitter, cart: Cart, { address, paymentMethod, products }: FirstStepOrderData) {
 		this._stateEmitter = stateEmitter;
 		this._address = address;
 		this._paymentMethod = paymentMethod;
@@ -70,14 +71,11 @@ export class CartStep2 {
 	}
 
 	private _inputInputEmailPhoneListener = (): void => {
-		// console.log(event);
 		this._formState.email = this._nodes.orderInputEmailNode.value;
 		this._formState.phone = this._nodes.orderInputPhoneNode.value;
 		this._nodes.orderPayBtnNode.disabled = !this._validForm;
 		this._renderFormErrors();
 
-		console.log(this._formState);
-		console.log(this._validForm, 'this._validForm');
 		
 	}
 
@@ -102,14 +100,14 @@ export class CartStep2 {
 		const secondStepOrderData: SecondStepOrderData = {
 			email: this._formState.email,
 			phone: this._formState.phone,
-			cart: this._cart,
 			paymentMethod: this._paymentMethod,
-			address: this._address
+			address: this._address,
+			products: this._cart.getProducts()
 		};
 
-		const cartStepFinal = new CartStepFinal(this._stateEmitter, secondStepOrderData);
+		const cartStepFinal = new CartStepFinal(this._stateEmitter, this._cart, secondStepOrderData);
 		const cartStepFinalNode = cartStepFinal.createModalContentNode();
-		const modal = new Modal(cartStepFinalNode);
+		const modal = new Modal(cartStepFinalNode, this._stateEmitter, 'succesModal');
 
 		modal.open();
 	}

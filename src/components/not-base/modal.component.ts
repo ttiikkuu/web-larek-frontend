@@ -1,4 +1,5 @@
 import { FunctionVoid } from "../../types";
+import { StateEmitter } from "./state-emitter";
 
 export class Modal {
 	private _pageWrapperNode = document.querySelector('.page__wrapper');
@@ -6,9 +7,21 @@ export class Modal {
 	private _modalContentNode = this._modalContainerNode.querySelector('.modal__content');
 	private _modalCloseNode = this._modalContainerNode.querySelector('.modal__close');
 	private _closeFn: FunctionVoid = () => { };
+	private _nameModal: string;
+	private _stateEmitter: StateEmitter;
 
-	constructor(content?: HTMLElement) {
+	constructor(content: HTMLElement, stateEmitter: StateEmitter, nameModal: string = `${crypto.randomUUID()}-modal`) {
 		this._modalContentNode.textContent = '';
+		this._nameModal = nameModal;
+		this._stateEmitter = stateEmitter;
+
+		this._stateEmitter.subscribeNewEvents(`close ${nameModal}`, () => {			
+			this.close();
+		});
+
+		this._stateEmitter.subscribeNewEvents(`open ${nameModal}`, () => {			
+			this.open();
+		});
 
 		if (content !== undefined) this._modalContentNode.append(content);
 	}

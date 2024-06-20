@@ -1,3 +1,5 @@
+import { Cart } from "../components/not-base/cart";
+
 export interface ProductListResponse {
 	total: number;
 	items: Product[];
@@ -22,7 +24,7 @@ export type FunctionVoid = () => void;
 export interface FirstStepOrderData {
 	paymentMethod: 'cash'	| 'card';
 	address: string;
-	cart: Product[];
+	products: Product[];
 }
 
 export interface SecondStepOrderData {
@@ -30,5 +32,5 @@ export interface SecondStepOrderData {
 	address: string;
 	email: string;
 	phone: string;
-	cart: Product[];
+	products: Product[];
 }

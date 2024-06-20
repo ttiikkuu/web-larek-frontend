@@ -5,9 +5,9 @@ import { StateEmitter } from "./state-emitter";
 
 export class ProductComponent {
 	public readonly product: Product;
-	private eventEmitter: StateEmitter<object>;
+	private eventEmitter: StateEmitter;
 
-	constructor(product: Product, eventEmitter: StateEmitter<object>) {
+	constructor(product: Product, eventEmitter: StateEmitter) {
 		this.product = product;
 		this.eventEmitter = eventEmitter;
 	}
@@ -15,7 +15,7 @@ export class ProductComponent {
 	public createNode() {
 		const cardCatalogTemplate = document.querySelector<HTMLTemplateElement>('#card-catalog').content;
 		const cardNode = cardCatalogTemplate.querySelector('.card').cloneNode(true) as HTMLElement;
-		const cardCategorySoftNode = cardNode.querySelector('.card__category_soft');
+		const cardCategorySoftNode = cardNode.querySelector('.card__category');
 		const cardTitleNode = cardNode.querySelector('.card__title');
 		const cardImgNode = cardNode.querySelector<HTMLImageElement>('.card__image');
 		const cardPriceNode = cardNode.querySelector('.card__price');

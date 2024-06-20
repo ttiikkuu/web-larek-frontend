@@ -24,7 +24,7 @@ stateEmitter.subscribe<Product>('openFullCard', product => {
 	const productFullCard = new ProductFullCard(stateEmitter, cart);
 	const productFullCardNode = productFullCard.createNode(product);
 
-	const modal = new Modal(productFullCardNode);
+	const modal = new Modal(productFullCardNode, stateEmitter);
 
 	modal.open({
 		closeFn: () => {
