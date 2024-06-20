@@ -1,6 +1,7 @@
 // Тимофей сам написал 20.05.2024
 import { Product } from "../../types";
 import { CDN_URL } from "../../utils/constants";
+import { Cart } from "./cart";
 import { StateEmitter } from "./state-emitter";
 
 export class ProductFullCard {
@@ -11,9 +12,11 @@ export class ProductFullCard {
 	private _product: Product;
 	private _existInBacket = false;
 	private _fullCardBtnNode: HTMLButtonElement;
+	private _cart: Cart<object>;
 
-	constructor(stateEmitter: StateEmitter<object>) {
+	constructor(stateEmitter: StateEmitter<object>, cart: Cart<object>) {
 		this._stateEmitter = stateEmitter;
+		this._cart = cart;
 	}
 
 	public createNode(product: Product): HTMLElement {
@@ -38,26 +41,17 @@ export class ProductFullCard {
 		fullCardImageNode.src = `${CDN_URL}${product.image}`;
 		fullCardPriceNode.textContent = priceText;
 
-
-		this._stateEmitter.subscribe(`changeCart id: ${product.id}`, this._listenerChangeCart);
+		this._cart.subscribeChangeCartId(product, this._listenerChangeCart);
 		this._stateEmitter.subscribeNewEvents(`closeFullCard by id: ${product.id}`, this._closeCallbackFullCard);
 
 		fullCardBtnNode.addEventListener('click', () => {
 
 			if (this._existInBacket === false) { // Если нет в корзине, то добавить в корзину, иначе удалить
 				this._existInBacket = true;
-				this._stateEmitter.updateState(`changeCart id: ${product.id}`, { existInBacket: true });
-				this._stateEmitter.updateState('cart', {
-					[product.id]: product
-				});
+				this._cart.addToCart(product);
 			} else if (this._existInBacket === true) {
 				this._existInBacket = false;
-				this._stateEmitter.updateState(`changeCart id: ${product.id}`, { existInBacket: false });
-
-				const cartState: any = this._stateEmitter.getState('cart');
-
-				delete cartState[product.id]; // Удаляем из корзины ранее добавленный продукт
-				this._stateEmitter.setState('cart', cartState);
+				this._cart.deleteFromCart(product);
 			}
 
 		});
@@ -67,7 +61,7 @@ export class ProductFullCard {
 
 	public destroyNode() { }
 
-	private _listenerChangeCart = ({ existInBacket }: { existInBacket: boolean }) => {		
+	private _listenerChangeCart = ({ existInBacket }: { existInBacket: boolean }): void => {		
 		this._existInBacket = existInBacket;
 
 		if (existInBacket === true) {
@@ -78,7 +72,7 @@ export class ProductFullCard {
 	}
 
 	private _closeCallbackFullCard = () => {		
-		this._stateEmitter.unsubscribe(`changeCart id: ${this._product.id}`, this._listenerChangeCart);
+		this._cart.unsubscribeChangeCartId(this._product, this._listenerChangeCart)
 		this._stateEmitter.unsubscribe(`closeFullCard by id: ${this._product.id}`, this._closeCallbackFullCard);
 	}
 

@@ -40,3 +40,63 @@ npm run build
 ```
 yarn build
 ```
+## Компоненты
+
+### Класс StateEmitter
+Слушатель событий, подписка и отписска на события, оюновление статуса события.
+
+
+### Класс Cart
+Управление состоянием корзины, добавление в корзину, удаление из корзины.
+
+### Класс ShoppingCart
+Рендеринг карзины, отображение списка товаров в корзине.
+
+
+### Класс ProductComponent
+Рендеринг одного продукта предпосмотра.
+
+### Класс ProductList
+Рендеринг полного списка продукутов каталога.
+
+### Класс ProductFullCard
+Рендеринг подробной карточки продукта.
+
+### Класс Modal
+Отвечает за модалку, открытие и зарытие.
+
+
+### Класс CartStep1
+Первый шаг оформления заказа, тип оплаты и адрес.
+
+### Класс CartStep2
+Второй шаг оформления заказа, почта и телефон.
+
+### Класс CartStepFinal
+Финаальный шаг заказа очищение корзины.
+
+
+## Типы данных
+
+### Продукт
+```
+export interface Product {
+	id: string;
+	description: string;
+	image: string;
+	title: string;
+	category: string;
+	price: number;
+}
+```
+
+### Данные по заказу
+```
+export interface SecondStepOrderData {
+	paymentMethod: 'cash'	| 'card';
+	address: string;
+	email: string;
+	phone: string;
+	cart: Product[];
+}
+```

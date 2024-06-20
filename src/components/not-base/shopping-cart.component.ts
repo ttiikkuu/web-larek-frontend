@@ -1,4 +1,5 @@
 import { Product } from "../../types";
+import { Cart } from "./cart";
 import { CartStep1 } from "./cart-step-1";
 import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
@@ -12,13 +13,12 @@ export class ShoppingCart {
 		cartPriceNode: null as any,
 		cartListNode: null as any
 	};
-	private _cart: Product[] = [
-
-	];
+	private _cart: Cart<object>
 	private _modalCart: Modal | null = null;
 
-	constructor(stateEmitter: StateEmitter<object>) {
+	constructor(stateEmitter: StateEmitter<object>, cart: Cart<object>) {
 		this._stateEmitter = stateEmitter;
+		this._cart = cart;
 		this._initEventListeners();
 	}
 
@@ -38,7 +38,7 @@ export class ShoppingCart {
 		this._nodes.cartPriceNode = cartPriceNode;
 		this._nodes.cartListNode = cartListNode;
 
-		cartPlaceOrderBtnNode.disabled = this._cart.length === 0
+		cartPlaceOrderBtnNode.disabled = this._cart.getCart().length === 0;
 		this._nodes.cartPlaceOrderBtnNode = cartPlaceOrderBtnNode;
 
 		const cartModalContentItemNodes = cart.map((product, index) => this._createCartModalContentItemNode(product, index + 1));
@@ -71,7 +71,6 @@ export class ShoppingCart {
 		this._nodes.headerBasketNode.addEventListener('click', this._clickHeaderBasketListener);
 		this._stateEmitter.subscribe('cart', (cartObj) => {
 			// слушаем данные в корзине
-			this._cart = Object.values(cartObj);
 			
 			setTimeout(() => {
 				this._renderCartInfo();
@@ -83,7 +82,7 @@ export class ShoppingCart {
 	}
 
 	private _clickHeaderBasketListener = (): void => {
-		const cartModalContentNode = this._createCartModalContentNode(this._cart);
+		const cartModalContentNode = this._createCartModalContentNode(this._cart.getCart());
 		const modal = new Modal(cartModalContentNode);
 		
 		this._modalCart = modal;
@@ -93,12 +92,7 @@ export class ShoppingCart {
 	}
 
 	private _clickCartItemDeleteBtnListener = (product: Product): void => {
-		this._stateEmitter.updateState(`changeCart id: ${product.id}`, { existInBacket: false });
-
-		const cartState: any = this._stateEmitter.getState('cart');
-
-		delete cartState[product.id]; // Удаляем из корзины ранее добавленный продукт
-		this._stateEmitter.setState('cart', cartState);
+		this._cart.deleteFromCart(product);
 	}
 
 	private _clickCheckoutCartListener = (cart: Product[]): void => {
@@ -110,24 +104,16 @@ export class ShoppingCart {
 	}
 
 	private _renderCartInfo(): void {
-		this._nodes.headerBasketCounterNode.textContent = String(this._cart.length);
+		this._nodes.headerBasketCounterNode.textContent = String(this._cart.getCart().length);
 
 		if (this._nodes.cartPriceNode === null) return;
-		this._nodes.cartPriceNode.textContent = `${this._getTotalPriceCart()} синапсов`;
+		this._nodes.cartPriceNode.textContent = `${this._cart.calcSumCart()} синапсов`;
 
 		if (this._nodes.cartListNode === null) return;
-		const cartModalContentItemNodes = this._cart.map((product, index) => this._createCartModalContentItemNode(product, index + 1));
+		const cartModalContentItemNodes = this._cart.getCart().map((product, index) => this._createCartModalContentItemNode(product, index + 1));
 
 		this._nodes.cartListNode.textContent = '';
 		this._nodes.cartListNode.append(...cartModalContentItemNodes);
-	}
-
-	private _getTotalPriceCart(): number {		
-		return this._cart.reduce((acc, curr) => {
-			const price = curr.price === null ? 0 : curr.price;
-			acc += price;
-			return acc;
-		}, 0);
 	}
 
 }
