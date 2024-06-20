@@ -1,10 +1,10 @@
 import { Product } from "../../types";
 import { Cart } from "./cart";
-import { CartStep1 } from "./cart-step-1";
+import { OrderPaymentAndAddress } from "./cart-step-1.component";
 import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
 
-export class ShoppingCart {
+export class ShoppingCartComponent {
 	private _stateEmitter: StateEmitter;
 	private _nodes = {
 		headerBasketCounterNode: document.querySelector('.header__basket-counter'),
@@ -33,7 +33,6 @@ export class ShoppingCart {
 			setTimeout(() => this._clickCheckoutCartListener(this._cart), 0);
 		});
 
-		// this._nodes.cartNode = cartNode;
 		this._nodes.cartPlaceOrderBtnNode = cartPlaceOrderBtnNode;
 		this._nodes.cartPriceNode = cartPriceNode;
 		this._nodes.cartListNode = cartListNode;
@@ -70,14 +69,10 @@ export class ShoppingCart {
 	private _initEventListeners(): void {		
 		this._nodes.headerBasketNode.addEventListener('click', this._clickHeaderBasketListener);
 		this._stateEmitter.subscribe('cart', (cartObj) => {
-			// слушаем данные в корзине
 			
 			setTimeout(() => {
 				this._renderCartInfo();
 			}, 0);
-			// this._nodes.cartPriceNode.textContent = String(this._getTotalPriceCart());
-			// TODO: Если открыта модалка, то заново рендерить информацию в списке корзины
-			// TODO: Сохранять узлы для рендеринга продуктов в списке корзины
 		});
 	}
 
@@ -96,7 +91,7 @@ export class ShoppingCart {
 	}
 
 	private _clickCheckoutCartListener = (cart: Cart): void => {
-		const cartStep1 = new CartStep1(this._stateEmitter, cart);
+		const cartStep1 = new OrderPaymentAndAddress(this._stateEmitter, cart);
 		const cartStep1Node = cartStep1.createModalContentNode();
 		const modal = new Modal(cartStep1Node, this._stateEmitter);
 

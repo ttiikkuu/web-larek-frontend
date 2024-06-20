@@ -1,4 +1,4 @@
-import { FirstStepOrderData, SecondStepOrderData, Product } from "../../types";
+import { OrderPaymentAndAddressData, OrderContactInformationData, Product } from "../../types";
 import { StateEmitter } from "./state-emitter";
 import { Modal } from "./modal.component";
 import { Cart } from "./cart";
@@ -11,7 +11,7 @@ export class CartStepFinal {
 	private _paymentMethod: 'cash' | 'card';
 	private _address: string;
 
-	constructor(stateEmitter: StateEmitter, cart: Cart, { email, phone, address, paymentMethod }: SecondStepOrderData) {
+	constructor(stateEmitter: StateEmitter, cart: Cart, { email, phone, address, paymentMethod }: OrderContactInformationData) {
 		this._stateEmitter = stateEmitter;
 		this._email = email;
 		this._phone = phone;

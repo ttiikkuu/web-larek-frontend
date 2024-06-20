@@ -133,3 +133,19 @@ export function createElement<
     }
     return element;
 }
+
+export function getCategoryEng(categoryRus: string) {
+	const comparisonCategories: Record<string, string> = {
+		'софт-скил': 'soft',
+		'другое': 'other',
+		'дополнительное': 'additional',
+		'кнопка': 'button',
+		'хард-скил': 'hard'
+	};
+
+	if (categoryRus in comparisonCategories) {
+		return comparisonCategories[categoryRus];
+	}
+
+	return 'other';
+}

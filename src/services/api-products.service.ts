@@ -3,17 +3,13 @@ import { ApiListResponse, Product } from "../types";
 import { API_URL } from "../utils/constants";
 
 export class ApiProductsService extends Api {
-    constructor() {
-        super(API_URL);
-    }
+	constructor() {
+		super(API_URL);
+	}
 
-    getAll() {
-        return this.get<ApiListResponse<Product[]>>('/product')
-            .then(responseList => responseList.items);
-    }
-
-    getById(id: string) {
-
-    }
+	public async getAll(): Promise<Product[]> {
+		return this.get<ApiListResponse<Product[]>>('/product')
+			.then(responseList => responseList.items);
+	}
 }
 

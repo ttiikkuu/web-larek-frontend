@@ -1,6 +1,6 @@
-import { FirstStepOrderData, Product } from "../../types";
+import { OrderPaymentAndAddressData } from "../../types";
 import { Cart } from "./cart";
-import { CartStep2 } from "./cart-step-2";
+import { OrderContactInformation } from "./cart-step-2.component";
 import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
 
@@ -18,7 +18,7 @@ interface CartStep1Nodes {
 	orderFormErrorsNode: HTMLElement | null;
 }
 
-export class CartStep1 {
+export class OrderPaymentAndAddress {
 	private _stateEmitter: StateEmitter;
 	private _nodes: CartStep1Nodes = {
 		orderFormNode: null,
@@ -112,12 +112,11 @@ export class CartStep1 {
 	}
 
 	private _goToStepTwo(): void {
-		const firstStepOrderData: FirstStepOrderData = {
+		const firstStepOrderData: OrderPaymentAndAddressData = {
 			paymentMethod: this._formState.paymentMethod,
-			address: this._formState.address,
-			products: this._cart.getProducts()
+			address: this._formState.address
 		};
-		const cartStep2 = new CartStep2(this._stateEmitter, this._cart, firstStepOrderData);
+		const cartStep2 = new OrderContactInformation(this._stateEmitter, this._cart, firstStepOrderData);
 		const cartStep2Node = cartStep2.createModalContentNode();
 		const modal = new Modal(cartStep2Node, this._stateEmitter);
 

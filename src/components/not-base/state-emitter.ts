@@ -67,7 +67,6 @@ export class StateEmitter<T extends object = object> {
 
 		eventInfo.subscribers.add(listener);
 
-		// Если есть сохраненное состояние для данного события, немедленно уведомим подписчика
 		if (onlyFutureEvents === false && eventInfo.state !== undefined) {
 			listener(eventInfo.state);
 		}

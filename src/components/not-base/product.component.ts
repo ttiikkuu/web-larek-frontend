@@ -1,6 +1,6 @@
 import { Product } from "../../types";
 import { CDN_URL } from "../../utils/constants";
-import { EventEmitter } from "../base/events";
+import { getCategoryEng } from "../../utils/utils";
 import { StateEmitter } from "./state-emitter";
 
 export class ProductComponent {
@@ -8,29 +8,54 @@ export class ProductComponent {
 	private eventEmitter: StateEmitter;
 
 	constructor(product: Product, eventEmitter: StateEmitter) {
-		this.product = product;
-		this.eventEmitter = eventEmitter;
-	}
+    this.product = product;
+    this.eventEmitter = eventEmitter;
+  }
 
-	public createNode() {
-		const cardCatalogTemplate = document.querySelector<HTMLTemplateElement>('#card-catalog').content;
-		const cardNode = cardCatalogTemplate.querySelector('.card').cloneNode(true) as HTMLElement;
-		const cardCategorySoftNode = cardNode.querySelector('.card__category');
-		const cardTitleNode = cardNode.querySelector('.card__title');
-		const cardImgNode = cardNode.querySelector<HTMLImageElement>('.card__image');
-		const cardPriceNode = cardNode.querySelector('.card__price');
-		const priceText = this.product.price === null ? 'Бесценно' : `${this.product.price} синапсов`;
+  public createNode(): HTMLElement {
+    const cardNode = this.createCardNode();
+    this.attachEventListeners(cardNode);
+    return cardNode;
+  }
 
-		cardCategorySoftNode.textContent = this.product.category;
-		cardTitleNode.textContent = this.product.title;
-		cardImgNode.src = `${CDN_URL}${this.product.image}`;
-		cardPriceNode.textContent = priceText;
+  private createCardNode(): HTMLElement {
+    const cardCatalogTemplate = document.querySelector<HTMLTemplateElement>('#card-catalog')?.content;
+    if (!cardCatalogTemplate) {
+      throw new Error('#card-catalog не найден');
+    }
 
-		cardNode.addEventListener('click', () => {
-			this.eventEmitter.updateState('openFullCard', this.product);
-			this.eventEmitter.updateState(`openFullCard by id: ${this.product.id}`, this.product);
-		});
+    const cardNode = cardCatalogTemplate.querySelector('.card')?.cloneNode(true) as HTMLElement;
+    if (!cardNode) {
+      throw new Error('.card не найден в template');
+    }
 
-		return cardNode;
-	}
+    this.updateCardContent(cardNode);
+    return cardNode;
+  }
+
+  private updateCardContent(cardNode: HTMLElement): void {
+    const cardCategoryNode = cardNode.querySelector<HTMLElement>('.card__category');
+    const cardTitleNode = cardNode.querySelector<HTMLElement>('.card__title');
+    const cardImgNode = cardNode.querySelector<HTMLImageElement>('.card__image');
+    const cardPriceNode = cardNode.querySelector<HTMLElement>('.card__price');
+
+    if (!cardCategoryNode || !cardTitleNode || !cardImgNode || !cardPriceNode) {
+      throw new Error('Не найдены узлы внутри card');
+    }
+
+    const priceText = this.product.price === null ? 'Бесценно' : `${this.product.price} синапсов`;
+
+    cardCategoryNode.textContent = this.product.category;
+    cardCategoryNode.classList.add(`card__category_${getCategoryEng(this.product.category)}`);
+    cardTitleNode.textContent = this.product.title;
+    cardImgNode.src = `${CDN_URL}${this.product.image}`;
+    cardPriceNode.textContent = priceText;
+  }
+
+  private attachEventListeners(cardNode: HTMLElement): void {
+    cardNode.addEventListener('click', () => {
+      this.eventEmitter.updateState('openFullCard', this.product);
+      this.eventEmitter.updateState(`openFullCard by id: ${this.product.id}`, this.product);
+    });
+  }
 }

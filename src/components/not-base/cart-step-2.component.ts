@@ -1,7 +1,7 @@
-import { FirstStepOrderData, SecondStepOrderData, Product } from "../../types";
+import { OrderPaymentAndAddressData, OrderContactInformationData, Product } from "../../types";
 import { StateEmitter } from "./state-emitter";
 import { Modal } from "./modal.component";
-import { CartStepFinal } from "./cart-step-final";
+import { CartStepFinal } from "./cart-step-final.component";
 import { Cart } from "./cart";
 
 interface CartStep2FormState {
@@ -17,7 +17,7 @@ interface CartStep2Nodes {
 	orderFormErrorsNode: HTMLElement | null;
 }
 
-export class CartStep2 {
+export class OrderContactInformation {
 	private _stateEmitter: StateEmitter;
 	private _cart: Cart;
 	private _paymentMethod: 'cash'	| 'card';
@@ -40,7 +40,7 @@ export class CartStep2 {
 		return (this._formState.email !== null && this._formState.email !== '' && this._formState.phone !== null && this._formState.phone !== '');
 	}
 
-	constructor(stateEmitter: StateEmitter, cart: Cart, { address, paymentMethod, products }: FirstStepOrderData) {
+	constructor(stateEmitter: StateEmitter, cart: Cart, { address, paymentMethod }: OrderPaymentAndAddressData) {
 		this._stateEmitter = stateEmitter;
 		this._address = address;
 		this._paymentMethod = paymentMethod;
@@ -97,7 +97,7 @@ export class CartStep2 {
 	}
 
 	private _goToStepFinal(): void {
-		const secondStepOrderData: SecondStepOrderData = {
+		const secondStepOrderData: OrderContactInformationData = {
 			email: this._formState.email,
 			phone: this._formState.phone,
 			paymentMethod: this._paymentMethod,
@@ -111,6 +111,5 @@ export class CartStep2 {
 
 		modal.open();
 	}
-
 
 }

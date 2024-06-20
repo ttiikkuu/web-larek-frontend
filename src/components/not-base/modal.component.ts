@@ -10,7 +10,7 @@ export class Modal {
 	private _nameModal: string;
 	private _stateEmitter: StateEmitter;
 
-	constructor(content: HTMLElement, stateEmitter: StateEmitter, nameModal: string = `${crypto.randomUUID()}-modal`) {
+	constructor(content: HTMLElement, stateEmitter: StateEmitter, nameModal: string = `${Math.random().toFixed(6)}-modal`) {
 		this._modalContentNode.textContent = '';
 		this._nameModal = nameModal;
 		this._stateEmitter = stateEmitter;
@@ -65,7 +65,7 @@ export class Modal {
 	private _closeOverlayClickListener = (event: PointerEvent): void => {
 		event.stopPropagation();
 		const targetNode = event.target as HTMLElement;
-		const closestModalContainerNode = targetNode.closest('.modal__container'); // Если в родителях есть 
+		const closestModalContainerNode = targetNode.closest('.modal__container');
 		
 		if (closestModalContainerNode === null) this.close();
 	}

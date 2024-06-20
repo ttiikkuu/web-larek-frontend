@@ -21,13 +21,12 @@ export interface ApiListResponse<T> {
 
 export type FunctionVoid = () => void;
 
-export interface FirstStepOrderData {
+export interface OrderPaymentAndAddressData {
 	paymentMethod: 'cash'	| 'card';
 	address: string;
-	products: Product[];
 }
 
-export interface SecondStepOrderData {
+export interface OrderContactInformationData {
 	paymentMethod: 'cash'	| 'card';
 	address: string;
 	email: string;
