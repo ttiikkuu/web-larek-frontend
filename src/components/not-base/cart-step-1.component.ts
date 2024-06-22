@@ -4,12 +4,12 @@ import { OrderContactInformation } from "./cart-step-2.component";
 import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
 
-interface CartStep1FormState {
+interface OrderPaymentAndAddressFormState {
 	paymentMethod: 'cash' | 'card' | null;
 	address: string | null;
 }
 
-interface CartStep1Nodes {
+interface OrderPaymentAndAddressNodes {
 	orderFormNode: HTMLFormElement | null;
 	orderCardButtonNode: HTMLButtonElement | null;
 	orderCashButtonNode: HTMLButtonElement | null;
@@ -20,7 +20,7 @@ interface CartStep1Nodes {
 
 export class OrderPaymentAndAddress {
 	private _stateEmitter: StateEmitter;
-	private _nodes: CartStep1Nodes = {
+	private _nodes: OrderPaymentAndAddressNodes = {
 		orderFormNode: null,
 		orderCardButtonNode: null,
 		orderCashButtonNode: null,
@@ -29,7 +29,7 @@ export class OrderPaymentAndAddress {
 		orderFormErrorsNode: null
 	};
 	private _cart: Cart;
-	private _formState: CartStep1FormState = {
+	private _formState: OrderPaymentAndAddressFormState = {
 		paymentMethod: null,
 		address: null,
 	};
@@ -116,9 +116,9 @@ export class OrderPaymentAndAddress {
 			paymentMethod: this._formState.paymentMethod,
 			address: this._formState.address
 		};
-		const cartStep2 = new OrderContactInformation(this._stateEmitter, this._cart, firstStepOrderData);
-		const cartStep2Node = cartStep2.createModalContentNode();
-		const modal = new Modal(cartStep2Node, this._stateEmitter);
+		const оrderContactInformation = new OrderContactInformation(this._stateEmitter, this._cart, firstStepOrderData);
+		const оrderContactInformationNode = оrderContactInformation.createModalContentNode();
+		const modal = new Modal(оrderContactInformationNode, this._stateEmitter);
 
 		modal.open();
 	}

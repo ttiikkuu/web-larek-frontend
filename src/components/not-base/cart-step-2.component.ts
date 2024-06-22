@@ -1,15 +1,15 @@
 import { OrderPaymentAndAddressData, OrderContactInformationData, Product } from "../../types";
 import { StateEmitter } from "./state-emitter";
 import { Modal } from "./modal.component";
-import { CartStepFinal } from "./cart-step-final.component";
+import { OrderSuccessfullyPlaced } from "./cart-step-final.component";
 import { Cart } from "./cart";
 
-interface CartStep2FormState {
+interface OrderContactInformationFormState {
 	email: string | null;
 	phone: string | null;
 }
 
-interface CartStep2Nodes {
+interface OrderContactInformationNodes {
 	orderFormNode: HTMLFormElement | null;
 	orderInputEmailNode: HTMLInputElement | null;
 	orderInputPhoneNode: HTMLInputElement | null;
@@ -23,7 +23,7 @@ export class OrderContactInformation {
 	private _paymentMethod: 'cash'	| 'card';
 	private _address: string;
 
-	private _nodes: CartStep2Nodes = {
+	private _nodes: OrderContactInformationNodes = {
 		orderFormNode: null,
 		orderInputEmailNode: null,
 		orderInputPhoneNode: null,
@@ -31,7 +31,7 @@ export class OrderContactInformation {
 		orderFormErrorsNode: null
 	};
 
-	private _formState: CartStep2FormState = {
+	private _formState: OrderContactInformationFormState = {
 		email: null,
 		phone: null,
 	};
@@ -105,9 +105,9 @@ export class OrderContactInformation {
 			products: this._cart.getProducts()
 		};
 
-		const cartStepFinal = new CartStepFinal(this._stateEmitter, this._cart, secondStepOrderData);
-		const cartStepFinalNode = cartStepFinal.createModalContentNode();
-		const modal = new Modal(cartStepFinalNode, this._stateEmitter, 'succesModal');
+		const orderSuccessfullyPlaced = new OrderSuccessfullyPlaced(this._stateEmitter, this._cart, secondStepOrderData);
+		const orderSuccessfullyPlacedNode = orderSuccessfullyPlaced.createModalContentNode();
+		const modal = new Modal(orderSuccessfullyPlacedNode, this._stateEmitter, 'succesModal');
 
 		modal.open();
 	}

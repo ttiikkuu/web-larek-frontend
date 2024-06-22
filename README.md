@@ -43,10 +43,24 @@ yarn build
 ## Компоненты
 Паттерн проектирования MVC (Model-View-Controller)
 
+
 # Model
 
-### ApiProductsService
-Получение продуктов по API
+### Класс ApiProductsService
+`ApiProductsService` отвечает за взаимодействие с API для получения данных о продуктах.
+
+## Методы
+
+### constructor()
+Инициализирует базовый URL для API.
+
+### getAll(): Promise<Product[]>
+Асинхронно получает список всех продуктов.
+
+- Возвращает: Промис с массивом продуктов.
+
+
+
 
 ### Класс Cart
 `Cart` управляет продуктами в корзине с помощью `StateEmitter`.
@@ -106,36 +120,332 @@ yarn build
 Возвращает массив продуктов в корзине.
 
 
+
+
 # View
 
 ### Класс ShoppingCart
-Рендеринг карзины, отображение списка товаров в корзине.
+`ShoppingCartComponent` управляет отображением корзины покупок и взаимодействием с ней.
+
+## Атрибуты
+
+- **_stateEmitter**: `StateEmitter`
+  - Управляет состоянием.
+- **_nodes**: Объект с DOM-элементами корзины.
+- **_cart**: `Cart`
+  - Управляет содержимым корзины.
+- **_modalCart**: `Modal` | `null`
+  - Модальное окно корзины.
+
+## Методы
+
+### constructor(stateEmitter: StateEmitter, cart: Cart)
+Инициализирует компонент корзины.
+
+### _createCartModalContentNode(): HTMLElement
+Создает DOM-элемент содержимого модального окна корзины.
+
+### _createCartModalContentItemNode(product: Product, index: number): HTMLElement
+Создает DOM-элемент для отдельного товара в корзине.
+
+### _initEventListeners(): void
+Инициализирует обработчики событий.
+
+### _clickHeaderBasketListener(): void
+Обработчик клика по корзине в шапке страницы.
+
+### _clickCartItemDeleteBtnListener(product: Product): void
+Обработчик клика по кнопке удаления товара из корзины.
+
+### _clickCheckoutCartListener(cart: Cart): void
+Обработчик оформления заказа.
+
+### _renderCartInfo(): void
+Обновляет информацию о корзине на странице.
+
+
+
 
 ### Класс ProductComponent
-Рендеринг одного продукта предпосмотра.
+`ProductComponent` отвечает за отображение отдельного продукта.
+
+## Атрибуты
+
+- **product**: `Product`
+  - Информация о продукте.
+- **eventEmitter**: `StateEmitter`
+  - Отправляет события при взаимодействии с продуктом.
+
+## Методы
+
+### constructor(product: Product, eventEmitter: StateEmitter)
+Инициализирует компонент продукта.
+
+### createNode(): HTMLElement
+Создает DOM-элемент продукта.
+
+### createCardNode(): HTMLElement
+Создает DOM-элемент карточки продукта.
+
+### updateCardContent(cardNode: HTMLElement): void
+Обновляет содержимое карточки продукта.
+
+### attachEventListeners(cardNode: HTMLElement): void
+Присоединяет обработчики событий к карточке продукта.
+
+
+
 
 ### Класс ProductList
-Рендеринг полного списка продукутов каталога.
+`ProductListComponent` отображает список продуктов.
+
+## Атрибуты
+
+- **galleryNode**: HTMLElement | null
+  - DOM-элемент галереи продуктов.
+- **stateEmitter**: `StateEmitter`
+  - Отправляет события при взаимодействии с продуктами.
+
+## Методы
+
+### constructor(stateEmitter: StateEmitter)
+Инициализирует компонент списка продуктов.
+
+### render(products: Product[]): void
+Отображает список продуктов.
+
+
+
 
 ### Класс ProductFullCard
-Рендеринг подробной карточки продукта.
+`ProductFullCard` отображает полную карточку продукта.
+
+## Атрибуты
+
+- **product**: `Product`
+  - Информация о продукте.
+- **_stateEmitter**: `StateEmitter`
+  - Отправляет события при взаимодействии с продуктами.
+- **_existInBacket**: boolean
+  - Флаг наличия продукта в корзине.
+- **_fullCardBtnNode**: HTMLButtonElement
+  - Кнопка добавления в корзину.
+- **_cart**: `Cart`
+  - Управляет содержимым корзины.
+
+## Методы
+
+### constructor(stateEmitter: StateEmitter, cart: Cart)
+Инициализирует компонент полной карточки продукта.
+
+### createNode(product: Product): HTMLElement
+Создает DOM-элемент полной карточки продукта.
+
+### _initializeCardContent(cardNode: HTMLElement, product: Product): void
+Инициализирует содержимое карточки продукта.
+
+### _attachEventListeners(cardNode: HTMLElement, product: Product): void
+Присоединяет обработчики событий к карточке продукта.
+
+
+
 
 ### Класс Modal
-Отвечает за модалку, открытие и зарытие.
+`Modal` отображает модальное окно с контентом.
+
+## Атрибуты
+
+- **_pageWrapperNode**: HTMLElement | null
+  - Обертка страницы.
+- **_modalContainerNode**: HTMLElement | null
+  - Контейнер модального окна.
+- **_modalContentNode**: HTMLElement | null
+  - Контент модального окна.
+- **_modalCloseNode**: HTMLElement | null
+  - Кнопка закрытия модального окна.
+- **_closeFn**: FunctionVoid
+  - Функция закрытия модального окна.
+- **_nameModal**: string
+  - Имя модального окна.
+- **_stateEmitter**: StateEmitter
+  - Генерирует события при взаимодействии с модальным окном.
+
+## Методы
+
+### constructor(content: HTMLElement, stateEmitter: StateEmitter, nameModal: string)
+Инициализирует модальное окно.
+
+### open({ closeFn }: { closeFn: FunctionVoid }): void
+Открывает модальное окно.
+
+### close(): void
+Закрывает модальное окно.
+
+### _addEventListeners(): void
+Добавляет обработчики событий.
+
+### _removeEventListeners(): void
+Удаляет обработчики событий.
+
+### _closeEscListener(event: KeyboardEvent): void
+Обработчик нажатия клавиши Esc.
+
+### _closeBtnClickListener(event: PointerEvent): void
+Обработчик клика по кнопке закрытия.
+
+### _closeOverlayClickListener(event: PointerEvent): void
+Обработчик клика по области вне модального окна.
+
+
+
 
 ### Класс OrderPaymentAndAddress
-Первый шаг оформления заказа, тип оплаты и адрес.
+Управляет процессом оформления заказа, включая выбор способа оплаты и ввод адреса доставки.
+
+## Атрибуты
+
+- **_stateEmitter**: StateEmitter
+  - Генерирует события при взаимодействии с заказом.
+- **_nodes**: OrderPaymentAndAddressNodes
+  - DOM-элементы формы оформления заказа.
+- **_cart**: Cart
+  - Управляет содержимым корзины.
+- **_formState**: OrderPaymentAndAddressFormState
+  - Состояние формы оформления заказа.
+
+## Методы
+
+### constructor(stateEmitter: StateEmitter, cart: Cart)
+Инициализирует компонент оформления заказа.
+
+### createModalContentNode(): HTMLFormElement
+Создает DOM-элемент формы оформления заказа.
+
+### _clickBtnListener(event: PointerEvent): void
+Обработчик клика по кнопкам выбора способа оплаты.
+
+### _inputAddressListener(): void
+Обработчик изменения в поле ввода адреса.
+
+### _clickNextBtnListener(event: PointerEvent): void
+Обработчик клика по кнопке перехода к следующему шагу оформления заказа.
+
+### _renderFormErrors(): void
+Обновляет сообщения об ошибках в форме оформления заказа.
+
+### _goToStepTwo(): void
+Переходит ко второму шагу оформления заказа.
+
+
+
 
 ### Класс OrderContactInformation
-Второй шаг оформления заказа, почта и телефон.
+Управляет вводом контактной информации при оформлении заказа.
 
-### Класс CartStepFinal
-Финаальный шаг заказа очищение корзины.
+## Атрибуты
+
+- **_stateEmitter**: StateEmitter
+  - Генерирует события при взаимодействии с заказом.
+- **_cart**: Cart
+  - Управляет содержимым корзины.
+- **_paymentMethod**: 'cash' | 'card'
+  - Способ оплаты заказа.
+- **_address**: string
+  - Адрес доставки.
+- **_nodes**: OrderContactInformationNodes
+  - DOM-элементы формы ввода контактной информации.
+- **_formState**: OrderContactInformationFormState
+  - Состояние формы ввода контактной информации.
+
+## Методы
+
+### constructor(stateEmitter: StateEmitter, cart: Cart, { address, paymentMethod }: OrderPaymentAndAddressData)
+Инициализирует компонент ввода контактной информации.
+
+### createModalContentNode(): HTMLFormElement
+Создает DOM-элемент формы ввода контактной информации.
+
+### _inputInputEmailPhoneListener(): void
+Обработчик изменения в полях ввода эл. почты и телефона.
+
+### _clickPayBtnListener(event: PointerEvent): void
+Обработчик клика по кнопке оплаты.
+
+### _renderFormErrors(): void
+Обновляет сообщения об ошибках в форме ввода контактной информации.
+
+### _goToStepFinal(): void
+Переходит к окончательному шагу оформления заказа.
+
+
+
+
+### Класс OrderSuccessfullyPlaced
+Отображает информацию об успешно оформленном заказе.
+
+## Атрибуты
+
+- **_stateEmitter**: StateEmitter
+  - Генерирует события при взаимодействии с заказом.
+- **_cart**: Cart
+  - Управляет содержимым корзины.
+- **_email**: string
+  - Email пользователя.
+- **_phone**: string
+  - Номер телефона пользователя.
+- **_paymentMethod**: 'cash' | 'card'
+  - Способ оплаты заказа.
+- **_address**: string
+  - Адрес доставки.
+
+## Методы
+
+### constructor(stateEmitter: StateEmitter, cart: Cart, { email, phone, address, paymentMethod }: OrderContactInformationData)
+Инициализирует компонент отображения успешно оформленного заказа.
+
+### createModalContentNode(): HTMLElement
+Создает DOM-элемент с информацией об успешно оформленном заказе.
+
+
+
 
 # Controller
 
 ### AppController
-Запуск приложения и управление состояниями.
+Управляет основной логикой приложения.
+
+## Атрибуты
+
+- **stateEmitter**: StateEmitter
+  - Генерирует события для обновления состояния приложения.
+- **cart**: Cart
+  - Управляет содержимым корзины.
+- **apiProductsService**: ApiProductsService
+  - Взаимодействует с сервером для получения списка продуктов.
+- **productListComponent**: ProductListComponent
+  - Отображает список продуктов.
+- **shoppingCartComponent**: ShoppingCartComponent
+  - Отображает содержимое корзины.
+
+## Методы
+
+### constructor()
+Инициализирует контроллер и все необходимые компоненты.
+
+### init(): void
+Инициализирует приложение: обновляет состояние корзины, загружает список продуктов и настраивает слушателей событий.
+
+### loadProducts(): void
+Загружает список продуктов с сервера и отображает их на странице.
+
+### setupEventListeners(): void
+Устанавливает слушателей событий для открытия полного описания продукта.
+
+### showProductFullCard(product: Product): void
+Отображает полное описание продукта в модальном окне.
+
+
+
 
 ### Класс StateEmitter
 `StateEmitter` управляет состояниями событий и уведомляет подписчиков об их изменениях.
@@ -197,6 +507,7 @@ yarn build
 
 
 
+
 ## Типы данных
 ### Продукт
 ```
@@ -209,6 +520,9 @@ export interface Product {
 	price: number;
 }
 ```
+
+
+
 
 ### Данные по заказу
 ```

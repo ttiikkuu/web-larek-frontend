@@ -3,7 +3,7 @@ import { StateEmitter } from "./state-emitter";
 import { Modal } from "./modal.component";
 import { Cart } from "./cart";
 
-export class CartStepFinal {
+export class OrderSuccessfullyPlaced {
 	private _stateEmitter: StateEmitter;
 	private _cart: Cart;
 	private _email: string;
