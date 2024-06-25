@@ -1,4 +1,5 @@
 import { ApiProductsService } from "../../services/api-products.service";
+import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
 import { Product } from "../../types";
 import { Cart } from "./cart";
 import { Modal } from "./modal.component";
@@ -12,14 +13,16 @@ export class AppController {
 	cart: Cart;
 	apiProductsService: ApiProductsService;
 	productListComponent: ProductListComponent;
-	shoppingCartComponent: ShoppingCartComponent
+	shoppingCartComponent: ShoppingCartComponent;
+	orderStepTrackerService: OrderStepTrackerService;
 
 	constructor() {
     this.stateEmitter = new StateEmitter();
     this.cart = new Cart(this.stateEmitter);
+		this.orderStepTrackerService = new OrderStepTrackerService(this.cart);
     this.apiProductsService = new ApiProductsService();
     this.productListComponent = new ProductListComponent(this.stateEmitter);
-    this.shoppingCartComponent = new ShoppingCartComponent(this.stateEmitter, this.cart);
+    this.shoppingCartComponent = new ShoppingCartComponent(this.stateEmitter, this.cart, this.orderStepTrackerService);
   }
 
   init(): void {

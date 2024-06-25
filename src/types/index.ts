@@ -26,10 +26,20 @@ export interface OrderPaymentAndAddressData {
 	address: string;
 }
 
-export interface OrderContactInformationData {
-	paymentMethod: 'cash'	| 'card';
-	address: string;
+export interface OrderContactData {
 	email: string;
 	phone: string;
+}
+
+export interface OrderData {
+	paymentMethod: 'cash'	| 'card';
+	email: string;
+	address: string;
+	phone: string;
 	products: Product[];
+}
+
+export interface OrderResponse {
+	id: string;
+	total: number;
 }

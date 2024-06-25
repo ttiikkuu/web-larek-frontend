@@ -1,22 +1,12 @@
-import { OrderPaymentAndAddressData, OrderContactInformationData, Product } from "../../types";
 import { StateEmitter } from "./state-emitter";
-import { Modal } from "./modal.component";
 import { Cart } from "./cart";
 
 export class OrderSuccessfullyPlaced {
 	private _stateEmitter: StateEmitter;
 	private _cart: Cart;
-	private _email: string;
-	private _phone: string;
-	private _paymentMethod: 'cash' | 'card';
-	private _address: string;
 
-	constructor(stateEmitter: StateEmitter, cart: Cart, { email, phone, address, paymentMethod }: OrderContactInformationData) {
+	constructor(stateEmitter: StateEmitter, cart: Cart) {
 		this._stateEmitter = stateEmitter;
-		this._email = email;
-		this._phone = phone;
-		this._address = address;
-		this._paymentMethod = paymentMethod;
 		this._cart = cart;
 	}
 
@@ -26,7 +16,7 @@ export class OrderSuccessfullyPlaced {
 		const orderSuccessDescription = orderSuccess.querySelector<HTMLElement>('.order-success__description');
 		const orderSuccessCloseBtnNode = orderSuccess.querySelector<HTMLButtonElement>('.order-success__close');
 		
-		orderSuccessDescription.textContent = `Списано ${this._cart.calcSumCart()} синапсов`;
+		orderSuccessDescription.textContent = `Списано ${this._cart.totalPrice()} синапсов`;
 
 		orderSuccessCloseBtnNode.addEventListener('click', (e) => {
 			e.preventDefault();

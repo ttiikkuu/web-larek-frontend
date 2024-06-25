@@ -1,3 +1,4 @@
+import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
 import { OrderPaymentAndAddressData } from "../../types";
 import { Cart } from "./cart";
 import { OrderContactInformation } from "./cart-step-2.component";
@@ -33,14 +34,20 @@ export class OrderPaymentAndAddress {
 		paymentMethod: null,
 		address: null,
 	};
+	private _orderStepTrackerService: OrderStepTrackerService;
 
 	private get _validForm(): boolean {
 		return (this._formState.address !== null && this._formState.address !== '' && this._formState.paymentMethod !== null);
 	}
 
-	constructor(stateEmitter: StateEmitter, cart: Cart) {
+	constructor(
+		stateEmitter: StateEmitter,
+		cart: Cart,
+		orderStepTrackerService: OrderStepTrackerService
+	) {
 		this._stateEmitter = stateEmitter;
 		this._cart = cart;
+		this._orderStepTrackerService = orderStepTrackerService;
 	}
 
 	public createModalContentNode(): HTMLFormElement {
@@ -116,7 +123,10 @@ export class OrderPaymentAndAddress {
 			paymentMethod: this._formState.paymentMethod,
 			address: this._formState.address
 		};
-		const оrderContactInformation = new OrderContactInformation(this._stateEmitter, this._cart, firstStepOrderData);
+		
+		this._orderStepTrackerService.saveStepOne(firstStepOrderData);
+		
+		const оrderContactInformation = new OrderContactInformation(this._stateEmitter, this._cart, this._orderStepTrackerService);
 		const оrderContactInformationNode = оrderContactInformation.createModalContentNode();
 		const modal = new Modal(оrderContactInformationNode, this._stateEmitter);
 

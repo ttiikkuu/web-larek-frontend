@@ -1,8 +1,9 @@
-import { OrderPaymentAndAddressData, OrderContactInformationData, Product } from "../../types";
+import { OrderPaymentAndAddressData, OrderData, Product, OrderContactData } from "../../types";
 import { StateEmitter } from "./state-emitter";
 import { Modal } from "./modal.component";
 import { OrderSuccessfullyPlaced } from "./cart-step-final.component";
 import { Cart } from "./cart";
+import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
 
 interface OrderContactInformationFormState {
 	email: string | null;
@@ -20,9 +21,6 @@ interface OrderContactInformationNodes {
 export class OrderContactInformation {
 	private _stateEmitter: StateEmitter;
 	private _cart: Cart;
-	private _paymentMethod: 'cash'	| 'card';
-	private _address: string;
-
 	private _nodes: OrderContactInformationNodes = {
 		orderFormNode: null,
 		orderInputEmailNode: null,
@@ -30,21 +28,20 @@ export class OrderContactInformation {
 		orderPayBtnNode: null,
 		orderFormErrorsNode: null
 	};
-
 	private _formState: OrderContactInformationFormState = {
 		email: null,
 		phone: null,
 	};
+	private _orderStepTrackerService: OrderStepTrackerService;
 
 	private get _validForm(): boolean {
 		return (this._formState.email !== null && this._formState.email !== '' && this._formState.phone !== null && this._formState.phone !== '');
 	}
 
-	constructor(stateEmitter: StateEmitter, cart: Cart, { address, paymentMethod }: OrderPaymentAndAddressData) {
+	constructor(stateEmitter: StateEmitter, cart: Cart, orderStepTrackerService: OrderStepTrackerService) {
 		this._stateEmitter = stateEmitter;
-		this._address = address;
-		this._paymentMethod = paymentMethod;
 		this._cart = cart;
+		this._orderStepTrackerService = orderStepTrackerService;
 	}
 
 	public createModalContentNode(): HTMLFormElement {
@@ -97,15 +94,23 @@ export class OrderContactInformation {
 	}
 
 	private _goToStepFinal(): void {
-		const secondStepOrderData: OrderContactInformationData = {
+		const step2Data: OrderContactData = {
 			email: this._formState.email,
-			phone: this._formState.phone,
-			paymentMethod: this._paymentMethod,
-			address: this._address,
-			products: this._cart.getProducts()
+			phone: this._formState.phone
 		};
 
-		const orderSuccessfullyPlaced = new OrderSuccessfullyPlaced(this._stateEmitter, this._cart, secondStepOrderData);
+		this._orderStepTrackerService.saveStepTwo(step2Data);
+
+		this._orderStepTrackerService.sendOrderToServer().then(() => {
+			this._createAndOpenNextStepModal();
+		}).catch(() => {
+			console.error('Заказ на сервер не смог отправиться');
+			alert('Заказ на сервер не смог отправиться');
+		});
+	}
+
+	private _createAndOpenNextStepModal(): void {
+		const orderSuccessfullyPlaced = new OrderSuccessfullyPlaced(this._stateEmitter, this._cart);
 		const orderSuccessfullyPlacedNode = orderSuccessfullyPlaced.createModalContentNode();
 		const modal = new Modal(orderSuccessfullyPlacedNode, this._stateEmitter, 'succesModal');
 

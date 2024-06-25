@@ -43,7 +43,15 @@ export class Cart<T extends object = object> {
 		return this._getArrCart();
 	}
 
-	public calcSumCart(): number {
+	public getIdProducts(): string[] {
+		return this._getArrCart().map(product => product.id);
+	}
+
+	public size(): number {
+		return this.getProducts().length;
+	}
+
+	public totalPrice(): number {
 		return this._getArrCart().reduce((acc, curr) => {
 			const price = curr.price === null ? 0 : curr.price;
 			acc += price;

@@ -91,7 +91,7 @@ yarn build
 ### getProducts(): Product[]
 Возвращает все продукты в корзине.
 
-### calcSumCart(): number
+### size(): number
 Вычисляет общую стоимость продуктов в корзине.
 
 ### subscribeChangeCartId(product: Product, listener: (state: T) => void)
@@ -400,7 +400,7 @@ yarn build
 
 ## Методы
 
-### constructor(stateEmitter: StateEmitter, cart: Cart, { email, phone, address, paymentMethod }: OrderContactInformationData)
+### constructor(stateEmitter: StateEmitter, cart: Cart, { email, phone, address, paymentMethod }: OrderData)
 Инициализирует компонент отображения успешно оформленного заказа.
 
 ### createModalContentNode(): HTMLElement
@@ -526,7 +526,7 @@ export interface Product {
 
 ### Данные по заказу
 ```
-export interface OrderContactInformationData {
+export interface OrderData {
 	paymentMethod: 'cash'	| 'card';
 	address: string;
 	email: string;
