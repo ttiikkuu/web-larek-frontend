@@ -1,26 +1,11 @@
 import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
-import { OrderPaymentAndAddressData } from "../../types";
+import { OrderPaymentAndAddressNodes, OrderPaymentAndAddressFormState, OrderPaymentAndAddressData } from "../../types";
 import { Cart } from "./cart";
-import { OrderContactInformation } from "./cart-step-2.component";
+import { ModalOrderContactInformationComponent } from "./modal-order-contact-information.component";
 import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
 
-interface OrderPaymentAndAddressFormState {
-	paymentMethod: 'cash' | 'card' | null;
-	address: string | null;
-}
-
-interface OrderPaymentAndAddressNodes {
-	orderFormNode: HTMLFormElement | null;
-	orderCardButtonNode: HTMLButtonElement | null;
-	orderCashButtonNode: HTMLButtonElement | null;
-	orderInputAddressNode: HTMLInputElement | null;
-	orderNextBtnNode: HTMLButtonElement | null;
-	orderFormErrorsNode: HTMLElement | null;
-}
-
-export class OrderPaymentAndAddress {
-	private _stateEmitter: StateEmitter;
+export class ModalOrderPaymentAndAddressComponent extends Modal {
 	private _nodes: OrderPaymentAndAddressNodes = {
 		orderFormNode: null,
 		orderCardButtonNode: null,
@@ -29,28 +14,57 @@ export class OrderPaymentAndAddress {
 		orderNextBtnNode: null,
 		orderFormErrorsNode: null
 	};
-	private _cart: Cart;
 	private _formState: OrderPaymentAndAddressFormState = {
 		paymentMethod: null,
 		address: null,
 	};
 	private _orderStepTrackerService: OrderStepTrackerService;
+	private _modalOrderContactInformationComponent: ModalOrderContactInformationComponent;
 
 	private get _validForm(): boolean {
 		return (this._formState.address !== null && this._formState.address !== '' && this._formState.paymentMethod !== null);
 	}
 
 	constructor(
-		stateEmitter: StateEmitter,
-		cart: Cart,
-		orderStepTrackerService: OrderStepTrackerService
+		orderStepTrackerService: OrderStepTrackerService,
+		modalOrderContactInformationComponent: ModalOrderContactInformationComponent,
+		content?: HTMLElement,
+		nameModal: string = `${Math.random().toFixed(6)}-modal`
 	) {
-		this._stateEmitter = stateEmitter;
-		this._cart = cart;
+		super(content, nameModal);
 		this._orderStepTrackerService = orderStepTrackerService;
+		this._modalOrderContactInformationComponent = modalOrderContactInformationComponent;
+		this._renderModalContent();
+		this._initEventListeners();
 	}
 
-	public createModalContentNode(): HTMLFormElement {
+	public open() {
+		this._renderModalContent();
+		super.open();
+	}
+
+	private _renderModalContent(): void {
+		if (this._nodes.orderFormNode === null) {
+			this._renderContent(this._createModalContentNode());
+			return;
+		}
+
+		this._renderContent(this._nodes.orderFormNode);
+		this._renderResetInputs();
+	}
+
+	private _renderResetInputs(): void {
+		this._formState = {
+			paymentMethod: null,
+			address: null
+		};
+		this._nodes.orderCardButtonNode.classList.remove('button_alt-active');
+		this._nodes.orderCashButtonNode.classList.remove('button_alt-active');
+		this._nodes.orderInputAddressNode.value = '';
+		this._nodes.orderNextBtnNode.disabled = true;
+	}
+
+	private _createModalContentNode(): HTMLFormElement {
 		const orderTemplate = document.querySelector<HTMLTemplateElement>('#order').content;
 		const orderFormNode = orderTemplate.querySelector('.form').cloneNode(true) as HTMLFormElement;
 		const orderCardButtonNode = orderFormNode.querySelector<HTMLButtonElement>('.order__buttons .button[name="card"]');
@@ -58,11 +72,6 @@ export class OrderPaymentAndAddress {
 		const orderInputAddressNode = orderFormNode.querySelector<HTMLInputElement>('input[name="address"]');
 		const orderNextBtnNode = orderFormNode.querySelector<HTMLButtonElement>('.modal__actions .order__button');
 		const orderFormErrorsNode = orderFormNode.querySelector<HTMLElement>('.form__errors');
-
-		orderCardButtonNode.addEventListener('click', this._clickBtnListener);
-		orderCashButtonNode.addEventListener('click', this._clickBtnListener);
-		orderInputAddressNode.addEventListener('input', this._inputAddressListener);
-		orderNextBtnNode.addEventListener('click', this._clickNextBtnListener);
 
 		this._nodes = {
 			orderFormNode,
@@ -74,6 +83,13 @@ export class OrderPaymentAndAddress {
 		};
 
 		return orderFormNode;
+	}
+
+	private _initEventListeners(): void {
+		this._nodes.orderCardButtonNode.addEventListener('click', this._clickBtnListener);
+		this._nodes.orderCashButtonNode.addEventListener('click', this._clickBtnListener);
+		this._nodes.orderInputAddressNode.addEventListener('input', this._inputAddressListener);
+		this._nodes.orderNextBtnNode.addEventListener('click', this._clickNextBtnListener);
 	}
 
 	private _clickBtnListener = (event: PointerEvent): void => {
@@ -125,12 +141,6 @@ export class OrderPaymentAndAddress {
 		};
 		
 		this._orderStepTrackerService.saveStepOne(firstStepOrderData);
-		
-		const оrderContactInformation = new OrderContactInformation(this._stateEmitter, this._cart, this._orderStepTrackerService);
-		const оrderContactInformationNode = оrderContactInformation.createModalContentNode();
-		const modal = new Modal(оrderContactInformationNode, this._stateEmitter);
-
-		modal.open();
+		this._modalOrderContactInformationComponent.open();
 	}
-	
 }

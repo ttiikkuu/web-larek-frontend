@@ -2,10 +2,13 @@ import { ApiProductsService } from "../../services/api-products.service";
 import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
 import { Product } from "../../types";
 import { Cart } from "./cart";
+import { ModalCartComponent } from "./modal-cart.component";
+import { ModalOrderContactInformationComponent } from "./modal-order-contact-information.component";
+import { ModalOrderPaymentAndAddressComponent } from "./modal-order-payment-and-address.component";
+import { ModalOrderSuccessfullyPlacedComponent } from "./modal-order-successfully-placed.component";
 import { Modal } from "./modal.component";
 import { ProductFullCard } from "./product-full-card.component";
 import { ProductListComponent } from "./product-list.component";
-import { ShoppingCartComponent } from "./shopping-cart.component";
 import { StateEmitter } from "./state-emitter";
 
 export class AppController {
@@ -13,8 +16,11 @@ export class AppController {
 	cart: Cart;
 	apiProductsService: ApiProductsService;
 	productListComponent: ProductListComponent;
-	shoppingCartComponent: ShoppingCartComponent;
 	orderStepTrackerService: OrderStepTrackerService;
+	modalCartComponent: ModalCartComponent;
+	modalOrderPaymentAndAddressComponent: ModalOrderPaymentAndAddressComponent;
+	modalOrderContactInformationComponent: ModalOrderContactInformationComponent;
+	modalOrderSuccessfullyPlacedComponent: ModalOrderSuccessfullyPlacedComponent;
 
 	constructor() {
     this.stateEmitter = new StateEmitter();
@@ -22,7 +28,24 @@ export class AppController {
 		this.orderStepTrackerService = new OrderStepTrackerService(this.cart);
     this.apiProductsService = new ApiProductsService();
     this.productListComponent = new ProductListComponent(this.stateEmitter);
-    this.shoppingCartComponent = new ShoppingCartComponent(this.stateEmitter, this.cart, this.orderStepTrackerService);
+		this.modalOrderSuccessfullyPlacedComponent = new ModalOrderSuccessfullyPlacedComponent(
+			this.cart
+		);
+		this.modalOrderContactInformationComponent = new ModalOrderContactInformationComponent(
+			this.stateEmitter,
+			this.cart,
+			this.orderStepTrackerService,
+			this.modalOrderSuccessfullyPlacedComponent
+		);
+		this.modalOrderPaymentAndAddressComponent = new ModalOrderPaymentAndAddressComponent(
+			this.orderStepTrackerService,
+			this.modalOrderContactInformationComponent,
+		);
+    this.modalCartComponent = new ModalCartComponent(
+			this.cart,
+			this.modalOrderPaymentAndAddressComponent
+		);
+		// this.modal
   }
 
   init(): void {
@@ -47,13 +70,12 @@ export class AppController {
     const productFullCard = new ProductFullCard(this.stateEmitter, this.cart);
     const productFullCardNode = productFullCard.createNode(product);
 
-    const modal = new Modal(productFullCardNode, this.stateEmitter);
+    const modalProductFullCart = new Modal(productFullCardNode);
 
-    modal.open({
-      closeFn: () => {
-        const productId = productFullCard.product.id;
-        this.stateEmitter.updateState(`closeFullCard by id: ${productId}`, {});
-      }
-    });
+		modalProductFullCart.open();
+		modalProductFullCart.onClose(() => {
+			const productId = productFullCard.product.id;
+      this.stateEmitter.updateState(`closeFullCard by id: ${productId}`, {});
+		});
   }
 }

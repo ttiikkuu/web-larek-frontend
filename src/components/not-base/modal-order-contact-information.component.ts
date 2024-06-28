@@ -1,25 +1,11 @@
-import { OrderPaymentAndAddressData, OrderData, Product, OrderContactData } from "../../types";
-import { StateEmitter } from "./state-emitter";
-import { Modal } from "./modal.component";
-import { OrderSuccessfullyPlaced } from "./cart-step-final.component";
-import { Cart } from "./cart";
 import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
+import { OrderContactInformationNodes, OrderContactInformationFormState, OrderContactData } from "../../types";
+import { Cart } from "./cart";
+import { ModalOrderSuccessfullyPlacedComponent } from "./modal-order-successfully-placed.component";
+import { Modal } from "./modal.component";
+import { StateEmitter } from "./state-emitter";
 
-interface OrderContactInformationFormState {
-	email: string | null;
-	phone: string | null;
-}
-
-interface OrderContactInformationNodes {
-	orderFormNode: HTMLFormElement | null;
-	orderInputEmailNode: HTMLInputElement | null;
-	orderInputPhoneNode: HTMLInputElement | null;
-	orderPayBtnNode: HTMLButtonElement | null;
-	orderFormErrorsNode: HTMLElement | null;
-}
-
-export class OrderContactInformation {
-	private _stateEmitter: StateEmitter;
+export class ModalOrderContactInformationComponent extends Modal {
 	private _cart: Cart;
 	private _nodes: OrderContactInformationNodes = {
 		orderFormNode: null,
@@ -33,18 +19,34 @@ export class OrderContactInformation {
 		phone: null,
 	};
 	private _orderStepTrackerService: OrderStepTrackerService;
+	private _modalOrderSuccessfullyPlacedComponent: ModalOrderSuccessfullyPlacedComponent;
 
 	private get _validForm(): boolean {
 		return (this._formState.email !== null && this._formState.email !== '' && this._formState.phone !== null && this._formState.phone !== '');
 	}
 
-	constructor(stateEmitter: StateEmitter, cart: Cart, orderStepTrackerService: OrderStepTrackerService) {
+	constructor(
+		stateEmitter: StateEmitter,
+		cart: Cart,
+		orderStepTrackerService: OrderStepTrackerService,
+		modalOrderSuccessfullyPlacedComponent: ModalOrderSuccessfullyPlacedComponent,
+		content?: HTMLElement,
+		nameModal: string = `${Math.random().toFixed(6)}-modal`
+	) {
+		super(content, nameModal);
 		this._stateEmitter = stateEmitter;
 		this._cart = cart;
 		this._orderStepTrackerService = orderStepTrackerService;
+		this._modalOrderSuccessfullyPlacedComponent = modalOrderSuccessfullyPlacedComponent;
+		this._renderModalContent();
 	}
 
-	public createModalContentNode(): HTMLFormElement {
+	public open() {
+		this._renderModalContent();
+		super.open();
+	}
+
+	private _createModalContentNode(): HTMLFormElement {
 		const orderTemplate = document.querySelector<HTMLTemplateElement>('#contacts').content;
 		const orderFormNode = orderTemplate.querySelector('.form').cloneNode(true) as HTMLFormElement;
 		const orderInputEmailNode = orderFormNode.querySelector<HTMLInputElement>('input[name="email"]');
@@ -67,13 +69,32 @@ export class OrderContactInformation {
 		return orderFormNode;
 	}
 
+	private _renderModalContent(): void {
+		if (this._nodes.orderFormNode === null) {
+			this._renderContent(this._createModalContentNode());
+			return;
+		}
+
+		this._renderContent(this._nodes.orderFormNode);
+		this._renderResetInputs();
+	}
+
+	private _renderResetInputs(): void {
+		this._formState = {
+			email: null,
+			phone: null
+		};
+
+		this._nodes.orderInputEmailNode.value = '';
+		this._nodes.orderInputPhoneNode.value = '';
+		this._nodes.orderPayBtnNode.disabled = true;
+	}
+
 	private _inputInputEmailPhoneListener = (): void => {
 		this._formState.email = this._nodes.orderInputEmailNode.value;
 		this._formState.phone = this._nodes.orderInputPhoneNode.value;
 		this._nodes.orderPayBtnNode.disabled = !this._validForm;
 		this._renderFormErrors();
-
-		
 	}
 
 	private _clickPayBtnListener = (event: PointerEvent): void => {
@@ -102,19 +123,14 @@ export class OrderContactInformation {
 		this._orderStepTrackerService.saveStepTwo(step2Data);
 
 		this._orderStepTrackerService.sendOrderToServer().then(() => {
-			this._createAndOpenNextStepModal();
+			this._openNextStepModal();
 		}).catch(() => {
 			console.error('Заказ на сервер не смог отправиться');
 			alert('Заказ на сервер не смог отправиться');
 		});
 	}
 
-	private _createAndOpenNextStepModal(): void {
-		const orderSuccessfullyPlaced = new OrderSuccessfullyPlaced(this._stateEmitter, this._cart);
-		const orderSuccessfullyPlacedNode = orderSuccessfullyPlaced.createModalContentNode();
-		const modal = new Modal(orderSuccessfullyPlacedNode, this._stateEmitter, 'succesModal');
-
-		modal.open();
+	private _openNextStepModal(): void {
+		this._modalOrderSuccessfullyPlacedComponent.open();
 	}
-
 }

@@ -1,4 +1,29 @@
-import { Cart } from "../components/not-base/cart";
+export interface OrderContactInformationFormState {
+	email: string | null;
+	phone: string | null;
+}
+
+export interface OrderContactInformationNodes {
+	orderFormNode: HTMLFormElement | null;
+	orderInputEmailNode: HTMLInputElement | null;
+	orderInputPhoneNode: HTMLInputElement | null;
+	orderPayBtnNode: HTMLButtonElement | null;
+	orderFormErrorsNode: HTMLElement | null;
+}
+
+export interface OrderPaymentAndAddressFormState {
+	paymentMethod: 'cash' | 'card' | null;
+	address: string | null;
+}
+
+export interface OrderPaymentAndAddressNodes {
+	orderFormNode: HTMLFormElement | null;
+	orderCardButtonNode: HTMLButtonElement | null;
+	orderCashButtonNode: HTMLButtonElement | null;
+	orderInputAddressNode: HTMLInputElement | null;
+	orderNextBtnNode: HTMLButtonElement | null;
+	orderFormErrorsNode: HTMLElement | null;
+}
 
 export interface ProductListResponse {
 	total: number;

@@ -14,8 +14,6 @@ export class OrderStepTrackerService extends Api {
 	}
 
 	public saveStepOne({ paymentMethod, address }: OrderPaymentAndAddressData): void {
-		if (this._step !== 0) throw new Error('Заказ не находится в начальном состоянии');
-
 		this._step = 1;
 		this._order = { paymentMethod, address, products: this._cart.getProducts() };
 	}
@@ -31,6 +29,7 @@ export class OrderStepTrackerService extends Api {
 		};
 	}
 
+	// Этот метод не будет выноситься из сервиса. Потому что логика сервиса в том, чтобы можно было не зависеть от какого либо кода. Можно подключать сервис, он может хранить состояние и что либо делать внутри себя и он не зависит от конретной реализации DOM или даже можно вызывать методы этого сервиса из других мест, не связанных с DOM. При вынесении метода теряется смысл сервиса, который здесь реализован, поэтому этот метод не будет выноситься.
 	public async sendOrderToServer(): Promise<OrderResponse> {
 		if (this._step !== 2) throw new Error('Отправить заказ на сервер можно только после шага 2');
 

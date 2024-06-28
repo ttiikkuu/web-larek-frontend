@@ -54,6 +54,10 @@ export class ProductFullCard {
     const priceText = product.price === null ? 'Бесценно' : `${product.price} синапсов`;
     
     this._fullCardBtnNode = fullCardBtnNode;
+		
+		if (product.price === null) {
+			this._fullCardBtnNode.disabled = true;
+		}
     
     fullCardCategoryNode.classList.add(`card__category_${getCategoryEng(this.product.category)}`);
     fullCardBtnNode.textContent = 'Добавить в корзину';
