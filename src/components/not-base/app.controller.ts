@@ -62,9 +62,7 @@ export class AppController {
   }
 
   loadProducts(): void {
-    this.apiProductsService.getAll().then(products => {
-			console.log(products);
-			
+    this.apiProductsService.getAll().then(products => {			
       this.productListComponent.render(products);
     });
   }
