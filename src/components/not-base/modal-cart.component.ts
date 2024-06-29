@@ -82,11 +82,20 @@ export class ModalCartComponent extends Modal {
 			setTimeout(() => this._clickCheckoutCartListener(this._cart), 0);
 		});
 
-		this.onOpen(() => this._cart.subscribeCart(this._cartStateListener));
-		this.onClose(() => this._cart.unsubscribeCart(this._cartStateListener));
+		this._cart.subscribeCart(this._cartStateCounterRenderListener);
+		this.onOpen(() => this._cart.subscribeCart(this._cartStateAllRenderListener));
+		this.onClose(() => this._cart.unsubscribeCart(this._cartStateAllRenderListener));
 	}
 
-	private _cartStateListener = (cartObj: Record<string, Product>) => {			
+	private _renderCartCounterInfo() {
+		this._nodes.headerBasketCounterNode.textContent = String(this._cart.getProducts().length);
+	}
+
+	private _cartStateCounterRenderListener = (): void => {
+		this._renderCartCounterInfo();
+	};
+
+	private _cartStateAllRenderListener = (cartObj: Record<string, Product>) => {			
 		setTimeout(() => {
 			this._renderCartInfo();
 		}, 0);
@@ -103,13 +112,13 @@ export class ModalCartComponent extends Modal {
 	}
 
 	private _clickCheckoutCartListener = (cart: Cart): void => {
-		this._cart.unsubscribeCart(this._cartStateListener);
+		this._cart.unsubscribeCart(this._cartStateAllRenderListener);
 		this._modalOrderPaymentAndAddressComponent.open();
 	}
 
 	private _renderCartInfo(): void {
 		this._renderModalContent();
-		this._nodes.headerBasketCounterNode.textContent = String(this._cart.getProducts().length);
+		this._renderCartCounterInfo();
 
 		if (this._nodes.cartPriceNode === null) return;
 		this._nodes.cartPriceNode.textContent = `${this._cart.totalPrice()} синапсов`;

@@ -75,6 +75,10 @@ export class Cart<T extends object = object> {
 		this._stateEmitter.unsubscribe('cart', listener);
 	}
 
+	public ifInCart(product: Product) {
+		return this._getArrCart().some(cartProduct => cartProduct.id === product.id);
+	}
+
 	private _getArrCart(): Product[] {
 		const stateCart = this._stateEmitter.getState('cart') as Record<string, Product>;
 

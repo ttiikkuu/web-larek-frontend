@@ -5,11 +5,11 @@ import { StateEmitter } from "./state-emitter";
 
 export class ProductComponent {
 	public readonly product: Product;
-	private eventEmitter: StateEmitter;
+	private stateEmitter: StateEmitter;
 
 	constructor(product: Product, eventEmitter: StateEmitter) {
     this.product = product;
-    this.eventEmitter = eventEmitter;
+    this.stateEmitter = eventEmitter;
   }
 
   public createNode(): HTMLElement {
@@ -54,8 +54,7 @@ export class ProductComponent {
 
   private attachEventListeners(cardNode: HTMLElement): void {
     cardNode.addEventListener('click', () => {
-      this.eventEmitter.updateState('openFullCard', this.product);
-      this.eventEmitter.updateState(`openFullCard by id: ${this.product.id}`, this.product);
+      this.stateEmitter.updateState('openFullCard', this.product);
     });
   }
 }

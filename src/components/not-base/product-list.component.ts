@@ -1,15 +1,16 @@
 import { Product } from "../../types";
+import { ProductComponentFactory } from "./product-component-factory";
 import { ProductComponent } from "./product.component";
 import { StateEmitter } from "./state-emitter";
 
 export class ProductListComponent {
-  private galleryNode: HTMLElement | null;
-  private stateEmitter: StateEmitter;
+  private _galleryNode: HTMLElement | null;
+	private _productComponentFactory: ProductComponentFactory;
 
-  constructor(stateEmitter: StateEmitter) {
-    this.stateEmitter = stateEmitter;
-    this.galleryNode = document.querySelector('.gallery');
-    if (!this.galleryNode) {
+  constructor(productComponentFactory: ProductComponentFactory) {
+		this._productComponentFactory = productComponentFactory;
+    this._galleryNode = document.querySelector('.gallery');
+    if (!this._galleryNode) {
       throw new Error('.gallery не найден');
     }
   }
@@ -18,12 +19,12 @@ export class ProductListComponent {
     const fragment = document.createDocumentFragment();
 
     for (const product of products) {
-      const productComponent = new ProductComponent(product, this.stateEmitter);
+      const productComponent = this._productComponentFactory.create(product);
       const productComponentNode = productComponent.createNode();
 
       fragment.appendChild(productComponentNode);
     }
 
-    this.galleryNode.appendChild(fragment);
+    this._galleryNode.appendChild(fragment);
   }
 }

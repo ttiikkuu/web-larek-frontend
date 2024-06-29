@@ -30,9 +30,7 @@ export class ModalOrderSuccessfullyPlacedComponent extends Modal {
 		orderSuccessDescriptionNode.textContent = `Списано ${this._cart.totalPrice()} синапсов`;
 
 		orderSuccessCloseBtnNode.addEventListener('click', (e) => {
-			e.preventDefault();
-
-			this._stateEmitter.updateState('close succesModal', {});
+			this.close();
 		});
 
 		this._cart.deleteAllFromCart();

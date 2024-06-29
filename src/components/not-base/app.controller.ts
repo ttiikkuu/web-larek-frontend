@@ -6,9 +6,10 @@ import { ModalCartComponent } from "./modal-cart.component";
 import { ModalOrderContactInformationComponent } from "./modal-order-contact-information.component";
 import { ModalOrderPaymentAndAddressComponent } from "./modal-order-payment-and-address.component";
 import { ModalOrderSuccessfullyPlacedComponent } from "./modal-order-successfully-placed.component";
-import { Modal } from "./modal.component";
-import { ProductFullCard } from "./product-full-card.component";
+import { ModalProductFullCardComponent } from "./modal-product-full-card.component";
+import { ProductComponentFactory } from "./product-component-factory";
 import { ProductListComponent } from "./product-list.component";
+import { ProductComponent } from "./product.component";
 import { StateEmitter } from "./state-emitter";
 
 export class AppController {
@@ -21,13 +22,17 @@ export class AppController {
 	modalOrderPaymentAndAddressComponent: ModalOrderPaymentAndAddressComponent;
 	modalOrderContactInformationComponent: ModalOrderContactInformationComponent;
 	modalOrderSuccessfullyPlacedComponent: ModalOrderSuccessfullyPlacedComponent;
+	modalProductFullCardComponent: ModalProductFullCardComponent;
+	productComponent: ProductComponent;
+	productComponentFactory: ProductComponentFactory;
 
 	constructor() {
     this.stateEmitter = new StateEmitter();
     this.cart = new Cart(this.stateEmitter);
 		this.orderStepTrackerService = new OrderStepTrackerService(this.cart);
     this.apiProductsService = new ApiProductsService();
-    this.productListComponent = new ProductListComponent(this.stateEmitter);
+		this.productComponentFactory = new ProductComponentFactory(this.stateEmitter);
+    this.productListComponent = new ProductListComponent(this.productComponentFactory);
 		this.modalOrderSuccessfullyPlacedComponent = new ModalOrderSuccessfullyPlacedComponent(
 			this.cart
 		);
@@ -45,6 +50,8 @@ export class AppController {
 			this.cart,
 			this.modalOrderPaymentAndAddressComponent
 		);
+		this.modalProductFullCardComponent = new ModalProductFullCardComponent(this.cart);
+
 		// this.modal
   }
 
@@ -56,6 +63,8 @@ export class AppController {
 
   loadProducts(): void {
     this.apiProductsService.getAll().then(products => {
+			console.log(products);
+			
       this.productListComponent.render(products);
     });
   }
@@ -67,15 +76,6 @@ export class AppController {
   }
 
   showProductFullCard(product: Product): void {
-    const productFullCard = new ProductFullCard(this.stateEmitter, this.cart);
-    const productFullCardNode = productFullCard.createNode(product);
-
-    const modalProductFullCart = new Modal(productFullCardNode);
-
-		modalProductFullCart.open();
-		modalProductFullCart.onClose(() => {
-			const productId = productFullCard.product.id;
-      this.stateEmitter.updateState(`closeFullCard by id: ${productId}`, {});
-		});
+		this.modalProductFullCardComponent.openWithProduct(product);
   }
 }
