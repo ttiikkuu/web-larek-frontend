@@ -109,15 +109,4 @@ export class ModalProductFullCardComponent extends Modal {
     this._nodes.fullCardBtnNode.textContent = this._existInBacket ? 'Удалить из корзины' : 'Добавить в корзину';
 	}
 
-  // private _listenerChangeCart = ({ existInBacket }: { existInBacket: boolean }): void => {
-  //   this._existInBacket = existInBacket;
-  //   this._nodes.fullCardBtnNode.textContent = existInBacket ? 'Удалить из корзины' : 'Добавить в корзину';
-  // }
-
-  // private _closeCallbackFullCard = (): void => {
-	// 	this._cart.unsubscribeChangeCartId(this._product, this._listenerChangeCart);
-  //   this._stateEmitter.unsubscribe(`closeFullCard by id: ${this._product.id}`, this._closeCallbackFullCard);
-  // }
-
-
 }
