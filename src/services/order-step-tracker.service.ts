@@ -48,6 +48,9 @@ export class OrderStepTrackerService extends Api {
 			this._step = 1;
 			
 			throw error;
+		}).catch(() => {
+			alert('Заказ на сервер не смог отправиться');
+			throw 'Заказ на сервер не смог отправиться';
 		});
 	}
 
