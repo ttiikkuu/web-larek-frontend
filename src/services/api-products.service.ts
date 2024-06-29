@@ -8,7 +8,7 @@ export class ApiProductsService extends Api {
 	}
 
 	public async getAll(): Promise<Product[]> {
-		return this.get<ApiListResponse<Product[]>>('/productы')
+		return this.get<ApiListResponse<Product[]>>('/product')
 			.then(responseList => responseList.items)
 			.catch((err) => {
 				console.error('/product не получено, ошибка сетевого запроса');
