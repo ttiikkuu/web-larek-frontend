@@ -7,11 +7,11 @@ export class ApiProductsService extends Api {
 		super(API_URL);
 	}
 
-	public async getAll(): Promise<Product[]> {
+	public getAll(): Promise<Product[]> {
 		return this.get<ApiListResponse<Product[]>>('/product')
 			.then(responseList => responseList.items)
 			.catch((err) => {
-				console.error('/product не получено, ошибка сетевого запроса');
+				console.error('GET /product не получено, ошибка сетевого запроса');
 				
 				throw err;
 			});

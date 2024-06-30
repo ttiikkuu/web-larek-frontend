@@ -124,7 +124,9 @@ export class ModalOrderContactInformationComponent extends Modal {
 
 		this._orderStepTrackerService.sendOrderToServer().then(() => {
 			this._openNextStepModal();
-		})
+		}).catch(() => {
+			console.error('this._orderStepTrackerService.sendOrderToServer завершился неуспешно при отправке заказа на сервер');
+		});
 	}
 
 	private _openNextStepModal(): void {

@@ -30,7 +30,7 @@ export class OrderStepTrackerService extends Api {
 	}
 
 	
-	public async sendOrderToServer(): Promise<OrderResponse> {
+	public sendOrderToServer(): Promise<OrderResponse> {
 		if (this._step !== 2) throw new Error('Отправить заказ на сервер можно только после шага 2');
 
 		return this.post<OrderResponse>('/order', {
@@ -40,17 +40,16 @@ export class OrderStepTrackerService extends Api {
 			address: this._order.address,
 			total: this._cart.totalPrice(),
 			items: this._cart.getIdProducts()
-		}).then(data => {
+		})
+		.catch((error) => {
+			console.error('POST /order не отправлен, ошибка сетевого запроса');
+			this._step = 1;
+			throw error;
+		})
+		.then(data => {
 			this._step = 0;
 			this._order = {};
 			return data;
-		}).catch((error) => {
-			this._step = 1;
-			
-			throw error;
-		}).catch(() => {
-			alert('Заказ на сервер не смог отправиться');
-			throw 'Заказ на сервер не смог отправиться';
 		});
 	}
 

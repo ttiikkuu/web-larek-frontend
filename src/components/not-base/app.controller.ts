@@ -51,8 +51,6 @@ export class AppController {
 			this.modalOrderPaymentAndAddressComponent
 		);
 		this.modalProductFullCardComponent = new ModalProductFullCardComponent(this.cart);
-
-		// this.modal
   }
 
   init(): void {
@@ -64,7 +62,11 @@ export class AppController {
   loadProducts(): void {
     this.apiProductsService.getAll().then(products => {			
       this.productListComponent.render(products);
-    });
+    })
+		.catch(err => {
+			console.error(err);
+			console.error('this.apiProductsService.getAll завершился неуспешно при попытке отрендерить список продуктов');
+		});
   }
 
   setupEventListeners(): void {

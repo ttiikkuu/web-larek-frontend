@@ -1,7 +1,5 @@
 import { Product } from "../../types";
 import { ProductComponentFactory } from "./product-component-factory";
-import { ProductComponent } from "./product.component";
-import { StateEmitter } from "./state-emitter";
 
 export class ProductListComponent {
   private _galleryNode: HTMLElement | null;
