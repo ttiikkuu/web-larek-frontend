@@ -29,29 +29,22 @@ export class OrderStepTrackerService extends Api {
 		};
 	}
 
-	
-	public sendOrderToServer(): Promise<OrderResponse> {
-		if (this._step !== 2) throw new Error('Отправить заказ на сервер можно только после шага 2');
-
-		return this.post<OrderResponse>('/order', {
-			payment: this._order.paymentMethod,
-			email: this._order.email,
-			phone: this._order.phone,
-			address: this._order.address,
-			total: this._cart.totalPrice(),
-			items: this._cart.getIdProducts()
-		})
-		.catch((error) => {
-			console.error('POST /order не отправлен, ошибка сетевого запроса');
-			this._step = 1;
-			throw error;
-		})
-		.then(data => {
+	public saveServerPostOrderInfo({
+		success
+	}: {
+		success: boolean
+	}): void {
+		if (success === true) {
 			this._step = 0;
 			this._order = {};
-			return data;
-		});
+			return;
+		}
+
+		this._step = 1;
 	}
 
+	public getOrderData(): OrderData {
+		return this._order as unknown as OrderData;
+	}
 
 }

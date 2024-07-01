@@ -1,3 +1,4 @@
+import { ApiOrderService } from "../../services/api-order.service";
 import { ApiProductsService } from "../../services/api-products.service";
 import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
 import { Product } from "../../types";
@@ -16,6 +17,7 @@ export class AppController {
 	stateEmitter: StateEmitter;
 	cart: Cart;
 	apiProductsService: ApiProductsService;
+	apiOrderService: ApiOrderService;
 	productListComponent: ProductListComponent;
 	orderStepTrackerService: OrderStepTrackerService;
 	modalCartComponent: ModalCartComponent;
@@ -29,6 +31,7 @@ export class AppController {
 	constructor() {
     this.stateEmitter = new StateEmitter();
     this.cart = new Cart(this.stateEmitter);
+		this.apiOrderService = new ApiOrderService(this.cart);
 		this.orderStepTrackerService = new OrderStepTrackerService(this.cart);
     this.apiProductsService = new ApiProductsService();
 		this.productComponentFactory = new ProductComponentFactory(this.stateEmitter);
@@ -38,9 +41,9 @@ export class AppController {
 		);
 		this.modalOrderContactInformationComponent = new ModalOrderContactInformationComponent(
 			this.stateEmitter,
-			this.cart,
 			this.orderStepTrackerService,
-			this.modalOrderSuccessfullyPlacedComponent
+			this.modalOrderSuccessfullyPlacedComponent,
+			this.apiOrderService
 		);
 		this.modalOrderPaymentAndAddressComponent = new ModalOrderPaymentAndAddressComponent(
 			this.orderStepTrackerService,
@@ -63,9 +66,8 @@ export class AppController {
     this.apiProductsService.getAll().then(products => {			
       this.productListComponent.render(products);
     })
-		.catch(err => {
-			console.error(err);
-			console.error('this.apiProductsService.getAll завершился неуспешно при попытке отрендерить список продуктов');
+		.catch(() => {
+			console.error('Продукты не получилось загрузить');
 		});
   }
 

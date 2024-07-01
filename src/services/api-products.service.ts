@@ -9,12 +9,7 @@ export class ApiProductsService extends Api {
 
 	public getAll(): Promise<Product[]> {
 		return this.get<ApiListResponse<Product[]>>('/product')
-			.then(responseList => responseList.items)
-			.catch((err) => {
-				console.error('GET /product не получено, ошибка сетевого запроса');
-				
-				throw err;
-			});
+			.then(responseList => responseList.items);
 	}
 }
 

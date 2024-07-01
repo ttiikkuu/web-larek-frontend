@@ -1,3 +1,4 @@
+import { ApiOrderService } from "../../services/api-order.service";
 import { OrderStepTrackerService } from "../../services/order-step-tracker.service";
 import { OrderContactInformationNodes, OrderContactInformationFormState, OrderContactData } from "../../types";
 import { Cart } from "./cart";
@@ -6,7 +7,6 @@ import { Modal } from "./modal.component";
 import { StateEmitter } from "./state-emitter";
 
 export class ModalOrderContactInformationComponent extends Modal {
-	private _cart: Cart;
 	private _nodes: OrderContactInformationNodes = {
 		orderFormNode: null,
 		orderInputEmailNode: null,
@@ -20,6 +20,7 @@ export class ModalOrderContactInformationComponent extends Modal {
 	};
 	private _orderStepTrackerService: OrderStepTrackerService;
 	private _modalOrderSuccessfullyPlacedComponent: ModalOrderSuccessfullyPlacedComponent;
+	private _apiOrderService: ApiOrderService;
 
 	private get _validForm(): boolean {
 		return (this._formState.email !== null && this._formState.email !== '' && this._formState.phone !== null && this._formState.phone !== '');
@@ -27,17 +28,17 @@ export class ModalOrderContactInformationComponent extends Modal {
 
 	constructor(
 		stateEmitter: StateEmitter,
-		cart: Cart,
 		orderStepTrackerService: OrderStepTrackerService,
 		modalOrderSuccessfullyPlacedComponent: ModalOrderSuccessfullyPlacedComponent,
+		apiOrderService: ApiOrderService,
 		content?: HTMLElement,
 		nameModal: string = `${Math.random().toFixed(6)}-modal`
 	) {
 		super(content, nameModal);
 		this._stateEmitter = stateEmitter;
-		this._cart = cart;
 		this._orderStepTrackerService = orderStepTrackerService;
 		this._modalOrderSuccessfullyPlacedComponent = modalOrderSuccessfullyPlacedComponent;
+		this._apiOrderService = apiOrderService;
 		this._renderModalContent();
 	}
 
@@ -121,11 +122,14 @@ export class ModalOrderContactInformationComponent extends Modal {
 		};
 
 		this._orderStepTrackerService.saveStepTwo(step2Data);
+		const orderData = this._orderStepTrackerService.getOrderData();
 
-		this._orderStepTrackerService.sendOrderToServer().then(() => {
+		this._apiOrderService.createOrder(orderData).then(() => {
+			this._orderStepTrackerService.saveServerPostOrderInfo({ success: true });
 			this._openNextStepModal();
 		}).catch(() => {
-			console.error('this._orderStepTrackerService.sendOrderToServer завершился неуспешно при отправке заказа на сервер');
+			this._orderStepTrackerService.saveServerPostOrderInfo({ success: false });
+			console.error('Заказ не получился создать');
 		});
 	}
 
